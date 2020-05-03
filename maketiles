@@ -1,0 +1,2 @@
+#!/bin/bash
+tippecanoe -o sedlward2017.mbtiles --coalesce-smallest-as-needed --detect-shared-borders --force wards_2017_extra.geojson

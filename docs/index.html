@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SEDL Covid map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css" rel="stylesheet" />
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex-grow: 1;
+        }
+    </style>
+</head>
+
+<body class="ma0 pa0 sans-serif">
+    <!-- <header class="db w-100 pa0 ma0">
+        <h1 class="dib f4 b pa2 ma2">SEDL Covid Map</h1>
+        <nav class="tabs dib">
+            <ul class="list pa0 ma0 f6">
+                <li class="pa2 ml3 dib"><a href="" class="mid-gray underline-hover link">Sales effect</a></li>
+                <li class="pa2 ml3 dib"><a href="" class="near-black b underline-hover link">Benefits Calculator effect</a></li>
+            </ul>
+        </nav>
+    </header> -->
+    <main>
+        <div id="map" class="w-100 h-100"></div>
+    </main>
+    <script src="/assets/js/map.js"></script>
+    <script>
+
+    </script>
+</body>
+
+</html>
