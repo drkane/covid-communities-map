@@ -99,33 +99,89 @@ map.on('load', function () {
             if (map.getLayer('highlightArea')) {
                 map.removeLayer('highlightArea');
             }
+            if (map.getLayer('highlightAreaBBox')) {
+                map.removeLayer('highlightAreaBBox');
+                map.removeSource('highlightAreaBBox');
+            }
             return;
         }
         var geojson = boundaries.features.find((b) => b.properties.ttwa11cd == areaCode);
-        var filter = ['==', ['get', 'ttwa11cd'], areaCode];
-        if (map.getLayer('highlightArea')){
-            map.setFilter('highlightArea', filter)
-        } else {
-            map.addLayer({
-                'id': 'highlightArea',
-                'type': 'line',
-                'source': 'highlightArea',
-                'filter': filter,
-                'layout': {
-                    'line-join': 'round',
-                },
-                'paint': {
-                    'line-color': '#000',
-                    'line-width': 3,
-                }
-            });
-        }
+        // var filter = ['==', ['get', 'ttwa11cd'], areaCode];
+        // if (map.getLayer('highlightArea')){
+        //     map.setFilter('highlightArea', filter)
+        // } else {
+        //     map.addLayer({
+        //         'id': 'highlightArea',
+        //         'type': 'line',
+        //         'source': 'highlightArea',
+        //         'filter': filter,
+        //         'layout': {
+        //             'line-join': 'round',
+        //         },
+        //         'paint': {
+        //             'line-color': '#000',
+        //             'line-width': 3,
+        //         }
+        //     });
+        // }
         var geojsonBounds = bbox(geojson);
         var sw = new mapboxgl.LngLat(geojsonBounds[0], geojsonBounds[1]);
         var ne = new mapboxgl.LngLat(geojsonBounds[2], geojsonBounds[3]);
         var llb = new mapboxgl.LngLatBounds(sw, ne);
 
+        if (map.getLayer('highlightAreaBBox')){
+            map.removeLayer('highlightAreaBBox');
+            map.removeSource('highlightAreaBBox');
+        }
+
+        map.addSource('highlightAreaBBox', {
+            'type': 'geojson',
+            'data': {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'Polygon',
+                    'coordinates': [
+                        [
+                            [0, 90],
+                            [180, 90],
+                            [180, -90],
+                            [0, -90],
+                            [-180, -90],
+                            [-180, 0],
+                            [-180, 90],
+                            [0, 90],
+                        ],[
+                            [geojsonBounds[0], geojsonBounds[1]],
+                            [geojsonBounds[0], geojsonBounds[3]],
+                            [geojsonBounds[2], geojsonBounds[3]],
+                            [geojsonBounds[2], geojsonBounds[1]],
+                        ]
+                    ]
+                }
+            }
+        });
+        map.addLayer({
+            'id': 'highlightAreaBBox',
+            'type': 'fill',
+            'source': 'highlightAreaBBox',
+            'layout': {},
+            'paint': {
+                'fill-color': '#fff',
+                'fill-opacity': 0.8
+            }
+        });
+
         map.fitBounds(llb, {padding: 20});
+    });
+
+    map.on('drag', (ev) => {
+        if (map.getLayer('highlightArea')) {
+            map.removeLayer('highlightArea');
+        }
+        if (map.getLayer('highlightAreaBBox')) {
+            map.removeLayer('highlightAreaBBox');
+            map.removeSource('highlightAreaBBox');
+        }
     });
     
     document.getElementById('field-select').addEventListener('input', (ev) => {
