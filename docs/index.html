@@ -6,6 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet"> 
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css" rel="stylesheet" />
     <style>
@@ -22,22 +23,59 @@
         main {
             flex-grow: 1;
         }
+        .ubuntu {
+            font-family: 'Ubuntu', sans-serif;
+        }
     </style>
 </head>
 
-<body class="ma0 pa0 sans-serif">
-    <!-- <header class="db w-100 pa0 ma0">
-        <h1 class="dib f4 b pa2 ma2">SEDL Covid Map</h1>
-        <nav class="tabs dib">
+<body class="ma0 pa0 ubuntu">
+    <header class="db w-100 pa0 ma0 flex">
+        <h1 class="dib f4 b pa2 ma2">Covid and Communities</h1>
+        <!--<nav class="tabs dib">
             <ul class="list pa0 ma0 f6">
                 <li class="pa2 ml3 dib"><a href="" class="mid-gray underline-hover link">Sales effect</a></li>
                 <li class="pa2 ml3 dib"><a href="" class="near-black b underline-hover link">Benefits Calculator effect</a></li>
             </ul>
-        </nav>
-    </header> -->
+        </nav>-->
+        <div class="dib  pa2 ma2">
+            <label class="fl f6 mb1" for="area-select">Go to area</label><br>
+            <select class="fl" id="area-select">
+                <option value="">Select area</option>
+            </select>
+        </div>
+        <div class="dib pa2 ma2">
+            <label class="fl f6 mb1" for="vulnerability-quintile">Vulnerability quintile</label><br>
+            <select class="fl" id="vulnerability-quintile">
+                <option value="">Show all areas</option>
+                <option value="0">1 - most vulnerable</option>
+                <option value="1">2</option>
+                <option value="2">3</option>
+                <option value="3">4</option>
+                <option value="4">5 - least vulnerable</option>
+            </select>
+        </div>
+        <div class="dib pa2 ma2">
+            <label class="fl f6 mb1" for="field-select">Data to show</label><br>
+            <select class="fl" id="field-select">
+                <option value="sales_yoy_change_total_2020_04_21">Change in all sales</option>
+                <option value="sales_yoy_change_grocery_2020_04_21">Change in grocery sales</option>
+                <option value="vulnerability_score">Vulnerability score</option>
+            </select>
+        </div>
+        <div class="dib ma2 ml-auto">
+            <a href="https://socialeconomydatalab.org/" title="Social Economy Data Lab">
+                <img src="https://socialeconomydatalab.org/wp-content/uploads/2019/05/sedl_logo_nobkgd.png" class="w3" />
+            </a>
+        </div>
+    </header>
     <main>
         <div id="map" class="w-100 h-100"></div>
     </main>
+    <aside class="db w-100 pa0 ma0 flex f6 pa2">
+        <div id="area-display"></p>
+    </aside>
+    <script src="assets/js/geojson-bbox.min.js"></script>
     <script src="assets/js/map.js"></script>
     <script>
 
