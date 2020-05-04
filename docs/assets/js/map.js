@@ -85,7 +85,7 @@ map.on('mousemove', 'sedldata', function (e) {
         .addTo(map);
 });
 
-map.on('mouseleave', 'places', function () {
+map.on('mouseleave', 'sedldata', function () {
     map.getCanvas().style.cursor = '';
     popup.remove();
 });
