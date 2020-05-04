@@ -174,7 +174,7 @@ map.on('load', function () {
         map.fitBounds(llb, {padding: 20});
     });
 
-    map.on('drag', (ev) => {
+    map.on('dragend', (ev) => {
         if (map.getLayer('highlightArea')) {
             map.removeLayer('highlightArea');
         }
