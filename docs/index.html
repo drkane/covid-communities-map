@@ -5,77 +5,52 @@
     <title>SEDL Covid map</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/style.css" />
     <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" />
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.js"></script>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css" rel="stylesheet" />
-    <style>
-        div#app {
-            min-height: 100vh;
-        }
-        .flex-grow {
-            flex-grow: 1;
-        }
-        .ubuntu {
-            font-family: 'Ubuntu', sans-serif;
-        }
-        .map-overlay {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.8);
-            overflow: auto;
-            z-index: 9999;
-        }
-        .mapboxgl-canvas-container  {
-            height: 100%;
-        }
-    </style>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v1.10.0/mapbox-gl.css" />
 </head>
 
 <body class="ma0 pa0 ubuntu">
-    <div id="app" class="ma0 pa0 flex flex-column">
-        <header class="db w-100 pa0 ma0 flex">
-            <div class="dib pa2 ma2">
-                <h1 class="dib f4 b">Covid and Communities</h1><br>
-                <a href="#about" class="link blue underline-hover f6 white dib toggle-about">About this data</a>
-            </div>
-            <!--<nav class="tabs dib">
-                <ul class="list pa0 ma0 f6">
-                    <li class="pa2 ml3 dib"><a href="" class="mid-gray underline-hover link">Sales effect</a></li>
-                    <li class="pa2 ml3 dib"><a href="" class="near-black b underline-hover link">Benefits Calculator effect</a></li>
-                </ul>
-            </nav>-->
-            <div class="dib pa2 ma2">
-                <label class="fl f6 mb1" for="field-select">Data to show</label><br>
-                <select class="fl" id="field-select">
-                </select>
-            </div>
-            <div class="dib  pa2 ma2">
-                <label class="fl f6 mb1" for="area-select">Go to area</label><br>
-                <select class="fl" id="area-select">
-                    <option value="">Select area</option>
-                </select><br>
-                <a href="#" id="reset-map" class="link underline blue f6">Reset map</a>
-            </div>
-            <div class="dib pa2 ma2">
-                <label class="fl f6 mb1" for="vulnerability-quintile">Vulnerability quintile</label><br>
-                <select class="fl" id="vulnerability-quintile">
-                    <option value="">Show all areas</option>
-                    <option value="1">1 - least vulnerable</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5 - most vulnerable</option>
-                </select>
-            </div>
-            <div class="dib ma2 ml-auto">
+    <div id="app" class="ma0 pa0 grid">
+        <header class="db w-100 pa0 ma0">
+            <div class="fr pa3">
                 <a href="https://socialeconomydatalab.org/" title="Social Economy Data Lab">
                     <img src="https://socialeconomydatalab.org/wp-content/uploads/2019/05/sedl_logo_nobkgd.png" class="w3" />
                 </a>
             </div>
+            <div class="w-25-ns fl pa3">
+                <h1 class="dib f3 b">Covid and Communities</h1><br>
+                <a href="#about" class="link blue underline-hover f6 white dib toggle-about">About this data</a>
+            </div>
+            <div class="w-100 w-60-ns fl pa2">
+                <div class="dib pa2 w-100 fl">
+                    <!--<label class="fl f6 mb1 w-100" for="field-select">Data to show</label>-->
+                    <select class="fl w-100 f4" id="field-select">
+                    </select>
+                </div>
+                <div class="dib pa2 w-100 w-50-ns fl">
+                    <label class="fl f6 mb1 w-100" for="area-select">Go to area</label>
+                    <select class="fl w-100" id="area-select">
+                        <option value="">Select area</option>
+                    </select>
+                    <a href="#" id="reset-map" class="link underline blue f6 w-100">Reset map</a>
+                </div>
+                <div class="dib pa2 w-100 w-50-ns fl">
+                    <label class="fl f6 mb1 w-100" for="vulnerability-quintile">Vulnerability quintile</label>
+                    <select class="fl w-100" id="vulnerability-quintile">
+                        <option value="">Show all areas</option>
+                        <option value="1">1 - least vulnerable</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5 - most vulnerable</option>
+                    </select>
+                </div>
+            </div>
         </header>
-        <main class="h-100 flex flex-column flex-grow">
+        <main class="h6 h-100-l">
             <div id="about-data" class="pa3 measure absolute bg-white dn overflow-y-auto" style="z-index: 9999; max-height: 500px;">
                 <a href="#about" class="link blue underline-hover f6 white dib toggle-about fr">Close</a>
                 <h3 class="">About the data</h3>
@@ -96,15 +71,17 @@
                 ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil 
                 molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?</p>
             </div>
-            <div id="map" class="w-100 h-100 flex-grow">
+            <div id="map" class="w-100 h-100">
                 <div class="map-overlay pa2 ma2">
-                    <!--<h3 id="map-legend-title" class="pa0 ma0 f6 b"></h3>-->
-                    <ul id="map-legend" class="pa0 ma0 list"></ul>
                 </div>
             </div>
         </main>
-        <aside class="db w-100 pa2 ma0 f6" style="min-height: 144px;">
-            <div id="area-display"></div>
+        <aside class="pa2 ma0 f6">
+            <div class="pv3 bt bw3 b--light-gray">
+                <h2 id="map-legend-title" class="pa0 ma0 mb2"></h2>
+                <ul id="map-legend" class="pa0 ma0 list"></ul>
+            </div>
+            <div id="area-display" class="pv3 bt bw3 b--light-gray"></div>
         </aside>
     </div>
     <script>

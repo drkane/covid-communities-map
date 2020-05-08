@@ -1,0 +1,73 @@
+div#app {
+    min-height: 100vh;
+}
+.flex-grow {
+    flex-grow: 1;
+}
+.ubuntu {
+    font-family: 'Ubuntu', sans-serif;
+}
+.map-overlay {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.8);
+    overflow: auto;
+    z-index: 9999;
+}
+.mapboxgl-canvas-container  {
+    height: 100%;
+}
+.grid {
+    display: grid;
+    grid-template-areas: 
+        "header"
+        "content"
+        "aside";
+}
+.grid > header {
+    grid-area: header;
+}
+.grid > main {
+    grid-area: content;
+}
+.grid > aside {
+    grid-area: aside;
+}
+
+.h6 {
+    height: 32rem;
+}
+
+/* Not-small */
+@media screen and (min-width: 30em) {
+    .h6-ns {
+        height: 32rem;
+    }
+}
+/* Medium */
+@media screen and (min-width: 30em) and (max-width: 60em) {
+    .grid {
+        display: grid;
+        grid-template-rows: min-content auto min-content;
+    }
+    
+    .h6-m {
+        height: 32rem;
+    }
+}
+/* Large */
+@media screen and (min-width: 60em) {
+    .grid {
+        display: grid;
+        grid-template-areas: 
+            "header header"
+            "aside content";
+        grid-template-rows: min-content auto;
+        grid-template-columns: 25% auto;
+    }
+    
+    .h6-l {
+        height: 32rem;
+    }
+}

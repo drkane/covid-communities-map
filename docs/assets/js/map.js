@@ -1,26 +1,83 @@
+// colour ramp needs at least 10 values
+// http://bl.ocks.org/LuisSevillano/e95704a8966ee81a0a88575fbf978cac
+const COLOUR_RAMP = [
+    "#dd503c",
+    "#e0634a",
+    "#e47658",
+    "#e78966",
+    "#ea9c74",
+    "#eeb081",
+    "#f1c38f",
+    "#f4d69d",
+    "#f8e9ab",
+    "#fbfcb9",
+    "#e9fcae",
+    "#e7fcac",
+    "#d3fc9f",
+    "#befc93",
+    "#aafc86",
+    "#96fc79",
+    "#82fc6c",
+    "#6dfc60",
+    "#59fc53",
+    "#45fc46",
+]
+
 const FIELDS = {
-    // 'sales_change_total_bucket': {
-    //     name: 'Total Sales Change (week to previous year) bands',
-    //     min: 0,
-    //     max: 1,
-    // },
-    'sales_change_total': {
+    'sales_change_total_bucket': {
         name: 'Total Sales Change (week to previous year)',
-        min: -1,
-        max: 1,
-        nformat: (n) => Number(n).toLocaleString(undefined, {style: 'percent'}),
+        fillColor: {
+            property: 'sales_change_total_bucket',
+            type: 'categorical',
+            stops: [
+                ["Insufficient data", "#eee"],
+                ["80 - 100% Decrease", COLOUR_RAMP[0]],
+                ["60 - 80% Decrease", COLOUR_RAMP[1]],
+                ["40 - 60% Decrease", COLOUR_RAMP[3]],
+                ["20 - 40% Decrease", COLOUR_RAMP[4]],
+                ["0 - 20% Decrease", COLOUR_RAMP[8]],
+                ["0 - 20% Increase", COLOUR_RAMP[10]],
+                ["20 - 40% Increase", COLOUR_RAMP[12]],
+                ["40 - 60% Increase", COLOUR_RAMP[14]],
+                ["60 - 80% Increase", COLOUR_RAMP[16]],
+                ["80 - 100% Increase", COLOUR_RAMP[18]],
+                ["100%+ Increase", COLOUR_RAMP[19]],
+            ]
+        }
     },
-    // 'sales_change_grocery_bucket': {
-    //     name: 'Grocery Sales Change (week to previous year) bands',
-    //     min: 0,
+    // 'sales_change_total': {
+    //     name: 'Total Sales Change (week to previous year)',
+    //     min: -1,
     //     max: 1,
+    //     nformat: (n) => Number(n).toLocaleString(undefined, {style: 'percent'}),
     // },
-    'sales_change_grocery': {
+    'sales_change_grocery_bucket': {
         name: 'Grocery Sales Change (week to previous year)',
-        min: -1,
-        max: 1,
-        nformat: (n) => Number(n).toLocaleString(undefined, { style: 'percent' }),
+        fillColor: {
+            property: 'sales_change_grocery_bucket',
+            type: 'categorical',
+            stops: [
+                ["Insufficient data", "#eee"],
+                ["80 - 100% Decrease", COLOUR_RAMP[0]],
+                ["60 - 80% Decrease", COLOUR_RAMP[1]],
+                ["40 - 60% Decrease", COLOUR_RAMP[3]],
+                ["20 - 40% Decrease", COLOUR_RAMP[4]],
+                ["0 - 20% Decrease", COLOUR_RAMP[8]],
+                ["0 - 20% Increase", COLOUR_RAMP[10]],
+                ["20 - 40% Increase", COLOUR_RAMP[12]],
+                ["40 - 60% Increase", COLOUR_RAMP[14]],
+                ["60 - 80% Increase", COLOUR_RAMP[16]],
+                ["80 - 100% Increase", COLOUR_RAMP[18]],
+                ["100%+ Increase", COLOUR_RAMP[19]],
+            ]
+        }
     },
+    // 'sales_change_grocery': {
+    //     name: 'Grocery Sales Change (week to previous year)',
+    //     min: -1,
+    //     max: 1,
+    //     nformat: (n) => Number(n).toLocaleString(undefined, { style: 'percent' }),
+    // },
     'jobs_at_risk_workplace': {
         name: 'At risk jobs (as a result of COVID-19) by workplace',
         min: 0,
@@ -39,6 +96,7 @@ const FIELDS = {
         name: 'British Red Cross COVID Vulnerability quintile',
         min: 1,
         max: 5,
+        reverse: true,
     },
     // 'vulnerability_decile': {
     //     name: 'British Red Cross COVID Vulnerability decile',
@@ -62,7 +120,7 @@ const STARTING_ZOOM = 5;
 const MAP_STYLE = 'https://s3-eu-west-1.amazonaws.com/tiles.os.uk/v2/styles/open-zoomstack-light/style.json';
 const MAX_BOUNDS = [[-25, 45], [15, 65]]; // original: [[-8.74, 49.84], [1.96, 60.9]],
 
-var currentField = 'sales_change_total';
+var currentField = 'sales_change_total_bucket';
 
 var fieldSelect = document.getElementById('field-select');
 Object.entries(FIELDS).forEach(([key, value])=> {
@@ -101,12 +159,15 @@ var boundaries = {};
 function interpolateField(field_id){
     currentField = field_id;
     var field = FIELDS[field_id];
-    var startColour = "#FA0000";
-    var endColour = "#00FF00";
-    var midColour = "#FFFF00";
+    if(field.fillColor){
+        return field.fillColor;
+    }
+    var startColour = COLOUR_RAMP[0];
+    var endColour = COLOUR_RAMP[COLOUR_RAMP.length - 1];
+    var midColour = COLOUR_RAMP[COLOUR_RAMP.length / 2];
     if(field.reverse){
-        startColour = "#00FF00";
-        endColour = "#FA0000";
+        startColour = COLOUR_RAMP[COLOUR_RAMP.length - 1];
+        endColour = COLOUR_RAMP[0];
     }
 
     if(field.min < 0){
@@ -144,46 +205,54 @@ function interpolateField(field_id){
         // 10, "#FBFCB9"
 }
 
+function addItemToLegend(legend, colour, text) {
+    // create legend item
+    var li = document.createElement('li');
+    li.classList.add('pa0', 'ma0', 'flex', 'items-center', 'f6')
+
+    // create legend colour
+    var colourBlock = document.createElement('span');
+    colourBlock.classList.add('h1', 'w1', 'dib', 'mr2');
+    colourBlock.style.backgroundColor = colour;
+    li.append(colourBlock);
+
+    // create legend text
+    var legendText = document.createElement('span');
+    legendText.innerText = text;
+    legendText.classList.add('v-mid')
+    li.append(legendText);
+
+    // add to legend
+    legend.append(li);
+}
+
 function setField(map, field_id) {
     var field = FIELDS[field_id];
     var colours = interpolateField(field_id);
 
     var legend = document.getElementById('map-legend');
-    // document.getElementById('map-legend-title').innerText = field.name;
+    document.getElementById('map-legend-title').innerText = field.name;
     legend.innerHTML = '';
-    colours.slice(3).reduce((all, v, i) => {
-        if (i % 2) {
-            all[all.length - 1].push(v);
-            return all;
-        } else {
-            return [...all, [v]];
-        }
-    }, []).forEach(c => {
-
-        // create legend item
-        var li = document.createElement('li');
-        li.classList.add('pa0', 'ma0', 'flex', 'items-center', 'f6')
-
-        // create legend colour
-        var colourBlock = document.createElement('span');
-        colourBlock.classList.add('h1', 'w1', 'dib', 'mr2');
-        colourBlock.style.backgroundColor = c[1];
-        li.append(colourBlock);
-
-        // create legend text
-        var legendText = document.createElement('span');
-        console.log(c);
-        if(field.nformat){
-            legendText.innerText = field.nformat(parseFloat(c[0]));
-        } else {
-            legendText.innerText = c[0];
-        }
-        legendText.classList.add('v-mid')
-        li.append(legendText);
-
-        // add to legend
-        legend.append(li);
-    });
+    if(colours.stops){
+        colours.stops.forEach(([text, colour]) => {
+            addItemToLegend(legend, colour, text);
+        })
+    } else {
+        colours.slice(3).reduce((all, v, i) => {
+            if (i % 2) {
+                all[all.length - 1].push(v);
+                return all;
+            } else {
+                return [...all, [v]];
+            }
+        }, []).forEach(c => {
+            if(field.nformat){
+                addItemToLegend(legend, c[1], field.nformat(parseFloat(c[0])));
+            } else {
+                addItemToLegend(legend, c[1], c[0]);
+            }
+        });
+    }
 
     map.setPaintProperty('sedldata', 'fill-color', colours);
     // map.setFilter('sedldata', ["any", ["get", field_id]]);
@@ -371,7 +440,7 @@ map.on('load', function () {
         'layout': {},
         // 'filter': ['==', ['get', 'left_behind'], 'Y'],
         'paint': {
-            'fill-color': interpolateField("sales_change_total"),
+            'fill-color': interpolateField(currentField),
             'fill-opacity': 0.5,
             'fill-antialias': false,
         },
@@ -389,7 +458,7 @@ map.on('load', function () {
         },
     });
 
-    setField(map, 'sales_change_total');
+    setField(map, currentField);
 });
 
 
@@ -411,16 +480,18 @@ map.on('click', 'sedldata', function (e) {
 
     var features = map.queryRenderedFeatures(e.point);
 
-    var displayFeaturesText = `<h2 class="pa0 ma0 b">${features[0].properties.MSOA11HCLNM}</h2>
-        <h3 class="b pa0 ma0 mb2"><span class="f6 gray normal"> in </span>${features[0].properties.UTLANM }</h3>
+    var displayFeaturesText = `<h2 class="pa0 ma0 mb2">${features[0].properties.MSOA11HCLNM}</h2>
+        <h3 class="pa0 ma0 mb2"><span class="f6 gray normal"> in </span>${features[0].properties.UTLANM }</h3>
         <ul class="list pa0 ma0 flex flex-wrap">`
     Object.entries(FIELDS).forEach(([key, value]) => {
         if (features[0].properties[key]){
+            var v = features[0].properties[key];
             if (value.nformat){
-                displayFeaturesText += `<li class="pa0 ma0 pr3 w-100 w-50-ns w-25-l">${value.name}: ${value.nformat(features[0].properties[key])}</p>`
-            } else {
-                displayFeaturesText += `<li class="pa0 ma0 pr3 w-100 w-50-ns w-25-l">${value.name}: ${features[0].properties[key]}</p>`
+                v = value.nformat(features[0].properties[key]);
             }
+            displayFeaturesText += `<li class="pa0 ma0 pr3 w-100 f5">
+                <strong class="f6">${value.name}</strong><br>${v}
+            </p>`
         }
     });
     displayFeaturesText += `</ul>`;
