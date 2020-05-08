@@ -1,5 +1,17 @@
+attrs==19.3.0
+click==7.1.2
+click-plugins==1.1.1
+cligj==0.5.0
+Fiona @ file:///C:/Users/drkan/Downloads/Fiona-1.8.13-cp38-cp38-win_amd64.whl
+GDAL @ file:///C:/Users/drkan/Downloads/GDAL-3.0.4-cp38-cp38-win_amd64.whl
+geopandas==0.7.0
+munch==2.5.0
 numpy==1.18.3
 pandas==1.0.3
+pyproj @ file:///C:/Users/drkan/Downloads/pyproj-2.6.0-cp38-cp38-win_amd64.whl
+pyshp==2.1.0
 python-dateutil==2.8.1
 pytz==2020.1
+Shapely==1.7.0
 six==1.14.0
+tqdm==4.46.0

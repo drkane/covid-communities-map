@@ -12,15 +12,18 @@
 - [Output area lookups](https://geoportal.statistics.gov.uk/datasets/output-area-to-lower-layer-super-output-area-to-middle-layer-super-output-area-to-local-authority-district-december-2011-lookup-in-england-and-wales)
 - [Scottish lookups](https://www2.gov.scot/Topics/Statistics/sns/SNSRef/DZ2011Lookups)
 
-## Data levels
+## Data points
 
-- British Red Cross vulnerability index - MSOA11 & WD19
-- SEDL data - WD17
+- [British Red Cross vulnerability index]() - MSOA11
+- SEDL data - MSOA11
 - OCSI jobs/employees - MSOA11
 
 # Data cleaning steps
 
-- Step 1: Turn Scotland and NI boundaries into geojson - `shp_to_geojson.py`
-- Step 2: Merge geojson from Scotland, NI & England and Wales - `shp_to_geojson.py`
-- Step 3: Prepare Ward, Local Authority, TTWA, Region & Country lookups
+- Step 1: Fetch the data - using `sources.csv`
+- Step 2: Turn Scotland and NI boundaries into geojson - `shp_to_geojson.py`
+- Step 3: Merge geojson from Scotland, NI & England and Wales - `shp_to_geojson.py`
+- Step 4: Add lookups to MSOA boundaries from [geo-lookups](https://github.com/drkane/geo-lookups/) and merge in source data - `add_to_boundaries.py`
+- Step 5: Use Tippecanoe to create mbtiles from geojson - `maketiles.sh`
+- create TTWA boundaries and lookups
 

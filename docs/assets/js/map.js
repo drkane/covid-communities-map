@@ -1,12 +1,86 @@
-mapboxgl.accessToken = 'pk.eyJ1IjoiZGF2aWRrYW5lIiwiYSI6ImNqcnc4Y3JrdjA5OW40NHBraWc2YmRwZDMifQ.ycu4ql_lAy-rslsdnIcq0Q';
+const FIELDS = {
+    // 'sales_change_total_bucket': {
+    //     name: 'Total Sales Change (week to previous year) bands',
+    //     min: 0,
+    //     max: 1,
+    // },
+    'sales_change_total': {
+        name: 'Total Sales Change (week to previous year)',
+        min: -1,
+        max: 1,
+        nformat: (n) => Number(n).toLocaleString(undefined, {style: 'percent'}),
+    },
+    // 'sales_change_grocery_bucket': {
+    //     name: 'Grocery Sales Change (week to previous year) bands',
+    //     min: 0,
+    //     max: 1,
+    // },
+    'sales_change_grocery': {
+        name: 'Grocery Sales Change (week to previous year)',
+        min: -1,
+        max: 1,
+        nformat: (n) => Number(n).toLocaleString(undefined, { style: 'percent' }),
+    },
+    'jobs_at_risk_workplace': {
+        name: 'At risk jobs (as a result of COVID-19) by workplace',
+        min: 0,
+        max: 0.5,
+        reverse: true,
+        nformat: (n) => Number(n).toLocaleString(undefined, { style: 'percent' }),
+    },
+    'jobs_at_risk_residence': {
+        name: 'At risk jobs (as a result of COVID-19) by employee residence',
+        min: 0,
+        max: 0.5,
+        reverse: true,
+        nformat: (n) => Number(n).toLocaleString(undefined, { style: 'percent' }),
+    },
+    'vulnerability_quintile': {
+        name: 'British Red Cross COVID Vulnerability quintile',
+        min: 1,
+        max: 5,
+    },
+    // 'vulnerability_decile': {
+    //     name: 'British Red Cross COVID Vulnerability decile',
+    //     min: 1,
+    //     max: 10,
+    // },
+    // 'vulnerability_score': {
+    //     name: 'British Red Cross COVID Vulnerability score',
+    //     min: 0,
+    //     max: 344,
+    //     nformat: (n) => Number(n).toLocaleString(undefined, {}),
+    // },
+    // 'vulnerability_rank': {
+    //     name: 'British Red Cross COVID Vulnerability rank',
+    //     min: 1,
+    //     max: 6791,
+    // },
+}
+const STARTING_LATLNG = [-2.89479, 54.093409]; // original: [-1.485, 52.567],
+const STARTING_ZOOM = 5;
+const MAP_STYLE = 'https://s3-eu-west-1.amazonaws.com/tiles.os.uk/v2/styles/open-zoomstack-light/style.json';
+const MAX_BOUNDS = [[-25, 45], [15, 65]]; // original: [[-8.74, 49.84], [1.96, 60.9]],
+
+var currentField = 'sales_change_total';
+
+var fieldSelect = document.getElementById('field-select');
+Object.entries(FIELDS).forEach(([key, value])=> {
+    var opt = document.createElement('option');
+    opt.setAttribute('value', key);
+    opt.innerText = value.name;
+    fieldSelect.append(opt);
+})
+
+mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 var map = new mapboxgl.Map({
     container: 'map',
-    style: 'https://s3-eu-west-1.amazonaws.com/tiles.os.uk/v2/styles/open-zoomstack-light/style.json',
-    zoom: 7,
-    center: [-1.485, 52.567],
-    minZoom: 7,
+    style: MAP_STYLE,
+    zoom: STARTING_ZOOM,
+    center: STARTING_LATLNG,
+    minZoom: 4,
     maxZoom: 18,
-    maxBounds: [[-8.74, 49.84], [1.96, 60.9]]
+    maxBounds: MAX_BOUNDS,
 });
 
 // Add geolocate control to the map.
@@ -24,15 +98,40 @@ map.addControl(
 
 var boundaries = {};
 
-function interpolateField(field){
+function interpolateField(field_id){
+    currentField = field_id;
+    var field = FIELDS[field_id];
+    var startColour = "#FA0000";
+    var endColour = "#00FF00";
+    var midColour = "#FFFF00";
+    if(field.reverse){
+        startColour = "#00FF00";
+        endColour = "#FA0000";
+    }
+
+    if(field.min < 0){
+        colours = [
+            field.min, startColour,
+            0, midColour,
+            field.max, endColour,
+        ]
+    } else {
+        colours = [
+            field.min, startColour,
+            (field.min + field.max) / 2, midColour,
+            field.max, endColour,
+        ]
+    }
+
     return [
         "interpolate",
         ["linear"],
-        ["get", field],
-        -100, "#FA0000",
-        0, "#FFFF00",
-        100, "#73FF00",
-        1000, "#00FF00",
+        ["get", field_id],
+    ].concat(colours);
+        // -100, "#FA0000",
+        // 0, "#FFFF00",
+        // 100, "#73FF00",
+        // 1000, "#00FF00",
         // 1, "#0864A7",
         // 2, "#0978C7",
         // 3, "#2690CC",
@@ -43,11 +142,71 @@ function interpolateField(field){
         // 8, "#E3F5D8",
         // 9, "#EFFCCA",
         // 10, "#FBFCB9"
-    ]
+}
+
+function setField(map, field_id) {
+    var field = FIELDS[field_id];
+    var colours = interpolateField(field_id);
+
+    var legend = document.getElementById('map-legend');
+    // document.getElementById('map-legend-title').innerText = field.name;
+    legend.innerHTML = '';
+    colours.slice(3).reduce((all, v, i) => {
+        if (i % 2) {
+            all[all.length - 1].push(v);
+            return all;
+        } else {
+            return [...all, [v]];
+        }
+    }, []).forEach(c => {
+
+        // create legend item
+        var li = document.createElement('li');
+        li.classList.add('pa0', 'ma0', 'flex', 'items-center', 'f6')
+
+        // create legend colour
+        var colourBlock = document.createElement('span');
+        colourBlock.classList.add('h1', 'w1', 'dib', 'mr2');
+        colourBlock.style.backgroundColor = c[1];
+        li.append(colourBlock);
+
+        // create legend text
+        var legendText = document.createElement('span');
+        console.log(c);
+        if(field.nformat){
+            legendText.innerText = field.nformat(parseFloat(c[0]));
+        } else {
+            legendText.innerText = c[0];
+        }
+        legendText.classList.add('v-mid')
+        li.append(legendText);
+
+        // add to legend
+        legend.append(li);
+    });
+
+    map.setPaintProperty('sedldata', 'fill-color', colours);
+    // map.setFilter('sedldata', ["any", ["get", field_id]]);
 }
 
 // add imd2019
 map.on('load', function () {
+
+    Array.from(document.getElementsByClassName('toggle-about')).forEach((el) => {
+        el.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            document.getElementById('about-data').classList.toggle('dn');
+        })
+    })
+
+    document.getElementById('reset-map').addEventListener('click', (ev) => {
+        ev.preventDefault();
+        map.flyTo({ center: STARTING_LATLNG, zoom: STARTING_ZOOM });
+        if (map.getLayer('highlightAreaBBox')) {
+            map.removeLayer('highlightAreaBBox');
+            map.removeSource('highlightAreaBBox');
+        }
+    });
 
     // fetch('assets/data/areas.json')
     //     .then(r => r.json())
@@ -187,7 +346,7 @@ map.on('load', function () {
     document.getElementById('field-select').addEventListener('input', (ev) => {
         ev.preventDefault();
         var field = ev.target.value;
-        map.setPaintProperty('sedldata', 'fill-color', interpolateField(field));
+        setField(map, field);
     });
     
     document.getElementById('vulnerability-quintile').addEventListener('input', (ev) => {
@@ -202,17 +361,17 @@ map.on('load', function () {
 
     map.addSource('sedldata', {
         type: 'vector',
-        url: 'mapbox://davidkane.9mlhlenp',
+        url: 'mapbox://davidkane.7cyqthwr',
     });
     map.addLayer({
         'id': 'sedldata',
         'source': 'sedldata',
-        'source-layer': 'wards_2017_extra',
+        'source-layer': 'msoa_data',
         'type': 'fill',
         'layout': {},
         // 'filter': ['==', ['get', 'left_behind'], 'Y'],
         'paint': {
-            'fill-color': interpolateField("sales_yoy_change_total_2020_04_21"),
+            'fill-color': interpolateField("sales_change_total"),
             'fill-opacity': 0.5,
             'fill-antialias': false,
         },
@@ -220,15 +379,17 @@ map.on('load', function () {
     map.addLayer({
         'id': 'sedldata-highlight',
         'source': 'sedldata',
-        'source-layer': 'wards_2017_extra',
+        'source-layer': 'msoa_data',
         'type': 'line',
         'layout': {},
-        'filter': ['==', ['get', 'wd17cd'], ''],
+        'filter': ['==', ['get', 'msoa11cd'], ''],
         'paint': {
             'line-color': '#0079b9',
             'line-width': 3,
         },
     });
+
+    setField(map, 'sales_change_total');
 });
 
 
@@ -250,25 +411,31 @@ map.on('click', 'sedldata', function (e) {
 
     var features = map.queryRenderedFeatures(e.point);
 
-    var displayFeaturesText = `<h2 class="pa0 ma0 b">
-                ${features[0].properties.wd17nm}
-            </h2>
-            <p class="pa0 mv0 ml0 mr3 dib">Vulnerability quintile: ${features[0].properties.vulnerability_quintile}</p>
-            <p class="pa0 mv0 ml0 mr3 dib">YOY change in all sales: ${features[0].properties.sales_yoy_change_total_2020_04_21}%</p>
-            <p class="pa0 mv0 ml0 mr3 dib">YOY change in grocery sales: ${features[0].properties.sales_yoy_change_grocery_2020_04_21}%</p>
-            `
+    var displayFeaturesText = `<h2 class="pa0 ma0 b">${features[0].properties.MSOA11HCLNM}</h2>
+        <h3 class="b pa0 ma0 mb2"><span class="f6 gray normal"> in </span>${features[0].properties.UTLANM }</h3>
+        <ul class="list pa0 ma0 flex flex-wrap">`
+    Object.entries(FIELDS).forEach(([key, value]) => {
+        if (features[0].properties[key]){
+            if (value.nformat){
+                displayFeaturesText += `<li class="pa0 ma0 pr3 w-100 w-50-ns w-25-l">${value.name}: ${value.nformat(features[0].properties[key])}</p>`
+            } else {
+                displayFeaturesText += `<li class="pa0 ma0 pr3 w-100 w-50-ns w-25-l">${value.name}: ${features[0].properties[key]}</p>`
+            }
+        }
+    });
+    displayFeaturesText += `</ul>`;
 
-    if (features[0].properties.wd17nm){
+    if (features[0].properties.MSOA11HCLNM){
         // popup
         //     .setLngLat(e.lngLat)
         //     .setHTML(displayFeaturesText)
         //     .addTo(map);
         areaDisplay.innerHTML = displayFeaturesText;
-        map.setFilter('sedldata-highlight', ['==', ['get', 'wd17cd'], features[0].properties.wd17cd]);
+        map.setFilter('sedldata-highlight', ['==', ['get', 'msoa11cd'], features[0].properties.msoa11cd]);
     } else {
         // popup.remove();
         areaDisplay.innerHTML = '';
-        map.setFilter('sedldata-highlight', ['==', ['get', 'wd17cd'], '']);
+        map.setFilter('sedldata-highlight', ['==', ['get', 'msoa11cd'], '']);
     }
 });
 
