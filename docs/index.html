@@ -52,25 +52,42 @@
             </div>
         </header>
         <main class="h6 h-100-l">
-            <div id="about-data" class="pa3 measure absolute bg-white dn overflow-y-auto" style="z-index: 9999; max-height: 500px;">
+            <div id="about-data" class="pa3 measure absolute bg-white dn overflow-y-auto lh-copy" style="z-index: 9999; max-height: 500px;">
                 <a href="#about" class="link blue underline-hover f6 white dib toggle-about fr">Close</a>
-                <h3 class="">About the data</h3>
-                <p>Lots of text about the data. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium 
-                doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto 
-                beatae vitae dicta sunt explicabo.</p>
-                <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut 
-                fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. 
-                Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, 
-                sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.</p>
-                <h4 class="">A subheading</h4>
+                <h3 class="">COVID-19 and Communities: Mapping the COVID-19 Effect</h3>
+                <p>At <abbr title="Social Economy Data Lab">SEDL</abbr>, we are aiming to provide granular, targeted and current data to help those looking 
+                to make hard decisions on how to best deploy and prioritise COVID-19 response resources. We hope 
+                this level of data is helpful to both government and social investors in their decision-making, 
+                but also for local organisations, such as charities and social enterprises operating with, and for, 
+                the individuals living and experiencing the COVID-19 effects in these communities.</p>
+                <p>In the map below, data is shown at <abbr title="Middle Super Output Area">MSOA</abbr>-level, to articulate each local area’s pre-existing 
+                vulnerability to the COVID-19 crisis, and the size of the current economic effect experienced 
+                within these communities.</p>
+                <p>We encourage you all to play around with the map:</p>
                 <ul>
-                    <li>List item 1</li>
-                    <li>List item 2</li>
-                    <li><a href="#">List item 3 with link</a></li>
+                    <li>Try select different datasets to show on the map - perhaps looking to see how areas with 
+                    different pre-existing vulnerability levels are experiencing the economic effects through 
+                    sales and jobs at risk;</li>
+                    <li>Zoom in and out of areas that are of interest to you;</li>
+                    <li>Click on a specific area on the map to see the underlying data points appear on the left panel; and,</li>
+                    <li>Share your thoughts and ideas on what this means for COVID-19 efforts.</li>
                 </ul>
-                <p>Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid 
-                ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil 
-                molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?</p>
+                <p>The data provided in the map below has drawn on the excellent work done by others to complement SEDL’s sales 
+                datasets. Specifically - </p>
+                <ol>
+                    <li><strong>The British Red Cross</strong>: who has made their <a href="https://britishredcrosssociety.github.io/covid-19-vulnerability/">COVID-19 vulnerability index</a>, and underlying datasets, 
+                    fully available for others to use.</li>
+                    <li><strong>Oxford Consultants for Social Inclusion (OCSI)</strong>: who have shared their jobs at risk dataset, at 
+                    MSOA level, with us for the purposes of this map (<a href="https://ocsi.uk/2020/04/29/which-local-labour-markets-are-most-at-risk/">OCSI local labour market analysis</a>). Their jobs at risk dataset has also built on the stellar work done 
+                    by the RSA, which can be found RSA jobs at risk analysis.</li>
+                </ol>
+                <p>As you can see, our work has benefitted greatly by these and other social economy data players who 
+                are sharing openly and transparently during this crisis. We encourage any other data partners who 
+                have granular (MSOA-level) datasets that they think would be helpful to add to this map, to 
+                <a href="mailto:kirsten.mulcahy@sibgroup.org.uk">please be in touch</a>.</p>
+                <p>Do also keep an eye out for updates to the map – we are looking to add a third data dimension 
+                related to recovery and response efforts; and are looking to provide updated data, monthly, if 
+                it is helpful to do so.</p>
             </div>
             <div id="map" class="w-100 h-100">
                 <div class="map-overlay pa2 ma2">
@@ -79,8 +96,11 @@
         </main>
         <aside class="pa2 ma0 f6">
             <div class="pv3 bt bw3 b--light-gray">
-                <h2 id="map-legend-title" class="pa0 ma0 mb2"></h2>
+                <h2 id="map-legend-title" class="pa0 ma0 f4 mb2 lh-title"></h2>
+                <h3 class="pa0 ma0 mb3 f4 normal gray lh-title">Provided by <span id="map-legend-provider"></span></h2>
                 <ul id="map-legend" class="pa0 ma0 list"></ul>
+                <div id="map-legend-description" class="f6 lh-copy"></div>
+                <div id="map-legend-source" class="f6 gray lh-copy"></div>
             </div>
             <div id="area-display" class="pv3 bt bw3 b--light-gray"></div>
         </aside>
