@@ -115,10 +115,6 @@ const FIELDS = {
     //     max: 6791,
     // },
 }
-const STARTING_LATLNG = [-2.89479, 54.093409]; // original: [-1.485, 52.567],
-const STARTING_ZOOM = 5;
-const MAP_STYLE = 'https://s3-eu-west-1.amazonaws.com/tiles.os.uk/v2/styles/open-zoomstack-light/style.json';
-const MAX_BOUNDS = [[-25, 45], [15, 65]]; // original: [[-8.74, 49.84], [1.96, 60.9]],
 
 var currentField = 'sales_change_total_bucket';
 
@@ -430,7 +426,7 @@ map.on('load', function () {
 
     map.addSource('sedldata', {
         type: 'vector',
-        url: 'mapbox://davidkane.7cyqthwr',
+        url: TILESET_URL,
     });
     map.addLayer({
         'id': 'sedldata',
