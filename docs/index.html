@@ -54,40 +54,56 @@
         <main class="h6 h-100-l">
             <div id="about-data" class="pa3 measure absolute bg-white dn overflow-y-auto lh-copy" style="z-index: 9999; max-height: 500px;">
                 <a href="#about" class="link blue underline-hover f6 white dib toggle-about fr">Close</a>
-                <h3 class="">COVID-19 and Communities: Mapping the COVID-19 Effect</h3>
-                <p>At <abbr title="Social Economy Data Lab">SEDL</abbr>, we are aiming to provide granular, targeted and current data to help those looking 
-                to make hard decisions on how to best deploy and prioritise COVID-19 response resources. We hope 
-                this level of data is helpful to both government and social investors in their decision-making, 
-                but also for local organisations, such as charities and social enterprises operating with, and for, 
-                the individuals living and experiencing the COVID-19 effects in these communities.</p>
-                <p>In the map below, data is shown at <abbr title="Middle Super Output Area">MSOA</abbr>-level, to articulate each local area’s pre-existing 
-                vulnerability to the COVID-19 crisis, and the size of the current economic effect experienced 
-                within these communities.</p>
-                <p>We encourage you all to play around with the map:</p>
+                <h3 class="">Data sources</h3>
+                <h4>Sales data: Provided by Imfoco</h4>
                 <ul>
-                    <li>Try select different datasets to show on the map - perhaps looking to see how areas with 
-                    different pre-existing vulnerability levels are experiencing the economic effects through 
-                    sales and jobs at risk;</li>
-                    <li>Zoom in and out of areas that are of interest to you;</li>
-                    <li>Click on a specific area on the map to see the underlying data points appear on the left panel; and,</li>
-                    <li>Share your thoughts and ideas on what this means for COVID-19 efforts.</li>
+                    <li>The data provided represents total sales linked to geo-tagged consumer-facing merchant 
+                    IDs for active debit card customers in England and Wales. It accounts for between 12%-27% 
+                    of consumer spending in a specific area; so although not fully representative of the full 
+                    sales universe, does give us a good indication of changes in spending patterns. </li>
+                    <li>Imfoco compiles, cleans and adds to consumer transaction spend raw data from 6 different 
+                    card and bank sources. They have transactional data on spend by customer through card and 
+                    online types (including direct debits).</li>
+                    <li>Data is not personalised, but merchants are identifiable if they have been coded (all big merchants have been).</li>
+                    <li>The sales data reflected in the map shows spending for the month of April 2020 period, compared to spending levels in April 2019.</li>
                 </ul>
-                <p>The data provided in the map below has drawn on the excellent work done by others to complement SEDL’s sales 
-                datasets. Specifically - </p>
-                <ol>
-                    <li><strong>The British Red Cross</strong>: who has made their <a href="https://britishredcrosssociety.github.io/covid-19-vulnerability/">COVID-19 vulnerability index</a>, and underlying datasets, 
-                    fully available for others to use.</li>
-                    <li><strong>Oxford Consultants for Social Inclusion (OCSI)</strong>: who have shared their jobs at risk dataset, at 
-                    MSOA level, with us for the purposes of this map (<a href="https://ocsi.uk/2020/04/29/which-local-labour-markets-are-most-at-risk/">OCSI local labour market analysis</a>). Their jobs at risk dataset has also built on the stellar work done 
-                    by the RSA, which can be found RSA jobs at risk analysis.</li>
-                </ol>
-                <p>As you can see, our work has benefitted greatly by these and other social economy data players who 
-                are sharing openly and transparently during this crisis. We encourage any other data partners who 
-                have granular (MSOA-level) datasets that they think would be helpful to add to this map, to 
-                <a href="mailto:kirsten.mulcahy@sibgroup.org.uk">please be in touch</a>.</p>
-                <p>Do also keep an eye out for updates to the map – we are looking to add a third data dimension 
-                related to recovery and response efforts; and are looking to provide updated data, monthly, if 
-                it is helpful to do so.</p>
+                <p><strong>Limitations:</strong></p>
+                <ul>
+                    <li>The data at local area can be influenced by the presence of a big merchant, and as a 
+                    result, some local economic sales changes might be reflecting particular losses or gains 
+                    made by individual merchants – for example Amazon HQ is in Hoxton East & Shoreditch. </li>
+                </ul>
+                <h4>Jobs at risk dataset: Provided by OCSI</h4>
+                <ul>
+                    <li>The ONS Business Impact of Coronavirus Survey (BICS) includes data on the furloughing 
+                    of workers across UK businesses between March 23 to April 5, 2020.</li>
+                    <li>This data includes responses from businesses that were either still trading or had temporarily 
+                    paused trading.  The figures are summarised in this <a href="https://www.ons.gov.uk/generator?uri=/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/articles/furloughingofworkersacrossukbusinesses/23march2020to5april2020/574ca854&format=csv">table</a>.</li>
+                    <li>This data has been mapped against the industrial composition of jobs for LSOAs, MSOAs and 
+                    Local Authorities to estimate exposure to labour market risks associated with COVID-19.</li>
+                    <li>Information on local jobs by industry is taken from the <a href="https://www.nomisweb.co.uk/query/construct/summary.asp?mode=construct&version=0&dataset=189">
+                    Business Register and Employment 
+                    Survey (BRES) 2018 open access data</a>  – with breakdowns by Industry Sections (which match 
+                        against the ONS Industrial classifications).</li>
+                </ul>
+                <p>
+                    Further detail on OCSI’s full methodology and analysis: 
+                    <a href="https://ocsi.uk/2020/04/29/which-local-labour-markets-are-most-at-risk/">OCSI Labour markets at Risk: Data and analysis</a>
+                </p>
+                <h4>Vulnerability index data: Provided by the British Red Cross</h4>
+                <ul>
+                    <li>This index has been calculated using many different datasets, to articulate and define an index, different COVID-19 vulnerability components into one index. </li>
+                    <li><a href="https://docs.google.com/document/d/1aWpzgvLKGEF5Ay_xVps17nnbT1zIEki7RGIIJXL5APo/edit#heading=h.a5ipgbuvnul8">Full methodology</a></li>
+                    <li><a href="https://britishredcrosssociety.github.io/covid-19-vulnerability/">Other data and document links found on Github</a></li>
+                </ul>
+                <p>Designed and developed by <a href="https://twitter.com/matthewgthomas">Matt Thomas</a> 
+                and Ellen Gordon at the British Red Cross. With contributions from</p>
+                <ul>
+                    <li><a href="https://github.com/MikeJohnPage">Mike Page</a> (British Red Cross)</li>
+                    <li><a href="https://twitter.com/tlrss">Tom Russell</a> (University of Oxford)</li>
+                    <li><a href="https://github.com/obisargoni">Obi Thompson Sargoni</a> (Centre for Advanced Spatial Analysis, University College London)</li>
+                    <li><a href="https://twitter.com/geo_brianj">Brian Johnston</a> (Queens University Belfast)</li>
+                </ul>
             </div>
             <div id="map" class="w-100 h-100">
                 <div class="map-overlay pa2 ma2">

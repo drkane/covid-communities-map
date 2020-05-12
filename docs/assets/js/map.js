@@ -27,24 +27,6 @@ const FIELDS = {
     'sales_change_total_bucket': {
         name: 'Total Sales Change (week to previous year)',
         provider: 'Imfoco',
-        description: `<ul>
-            <li>The data provided represents total sales linked to geo-tagged consumer-facing merchant 
-            IDs for active debit card customers in England and Wales. It accounts for between 12%-27% 
-            of consumer spending in a specific area; so although not fully representative of the full 
-            sales universe, does give us a good indication of changes in spending patterns. </li>
-            <li>Imfoco compiles, cleans and adds to consumer transaction spend raw data from 6 different 
-            card and bank sources. They have transactional data on spend by customer through card and 
-            online types (including direct debits).</li>
-            <li>Data is not personalised, but merchants are identifiable if they have been coded (all big merchants have been).</li>
-            <li>The sales data reflected in the map shows spending for the month of April 2020 period, compared to spending levels in April 2019.</li>
-        </ul>
-        <p><strong>Limitations:</strong></p>
-        <ul>
-            <li>The data at local area can be influenced by the presence of a big merchant, and as a 
-            result, some local economic sales changes might be reflecting particular losses or gains 
-            made by individual merchants – for example Amazon HQ is in Hoxton East & Shoreditch. </li>
-        </ul>`,
-        credits: ``,
         fillColor: {
             property: 'sales_change_total_bucket',
             type: 'categorical',
@@ -73,24 +55,6 @@ const FIELDS = {
     'sales_change_grocery_bucket': {
         name: 'Grocery Sales Change (week to previous year)',
         provider: 'Imfoco',
-        description: `<ul>
-            <li>The data provided represents total sales linked to geo-tagged consumer-facing merchant 
-            IDs for active debit card customers in England and Wales. It accounts for between 12%-27% 
-            of consumer spending in a specific area; so although not fully representative of the full 
-            sales universe, does give us a good indication of changes in spending patterns. </li>
-            <li>Imfoco compiles, cleans and adds to consumer transaction spend raw data from 6 different 
-            card and bank sources. They have transactional data on spend by customer through card and 
-            online types (including direct debits).</li>
-            <li>Data is not personalised, but merchants are identifiable if they have been coded (all big merchants have been).</li>
-            <li>The sales data reflected in the map shows spending for the month of April 2020 period, compared to spending levels in April 2019.</li>
-        </ul>
-        <p><strong>Limitations:</strong></p>
-        <ul>
-            <li>The data at local area can be influenced by the presence of a big merchant, and as a 
-            result, some local economic sales changes might be reflecting particular losses or gains 
-            made by individual merchants – for example Amazon HQ is in Hoxton East & Shoreditch. </li>
-        </ul>`,
-        credits: ``,
         fillColor: {
             property: 'sales_change_grocery_bucket',
             type: 'categorical',
@@ -119,23 +83,6 @@ const FIELDS = {
     'jobs_at_risk_workplace': {
         name: 'At risk jobs (as a result of COVID-19) by workplace',
         provider: 'OCSI',
-        description: `<ul>
-            <li>The ONS Business Impact of Coronavirus Survey (BICS) includes data on the furloughing 
-            of workers across UK businesses between March 23 to April 5, 2020.</li>
-            <li>This data includes responses from businesses that were either still trading or had temporarily 
-            paused trading.  The figures are summarised in this <a href="https://www.ons.gov.uk/generator?uri=/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/articles/furloughingofworkersacrossukbusinesses/23march2020to5april2020/574ca854&format=csv">table</a>.</li>
-            <li>This data has been mapped against the industrial composition of jobs for LSOAs, MSOAs and 
-            Local Authorities to estimate exposure to labour market risks associated with COVID-19.</li>
-            <li>Information on local jobs by industry is taken from the <a href="https://www.nomisweb.co.uk/query/construct/summary.asp?mode=construct&version=0&dataset=189">
-            Business Register and Employment 
-            Survey (BRES) 2018 open access data</a>  – with breakdowns by Industry Sections (which match 
-                against the ONS Industrial classifications).</li>
-        </ul>
-        <p>
-            Further detail on OCSI’s full methodology and analysis: 
-            <a href="https://ocsi.uk/2020/04/29/which-local-labour-markets-are-most-at-risk/">OCSI Labour markets at Risk: Data and analysis</a>
-        </p>`,
-        credits: ``,
         min: 0,
         max: 0.5,
         reverse: true,
@@ -144,24 +91,6 @@ const FIELDS = {
     'jobs_at_risk_residence': {
         name: 'At risk jobs (as a result of COVID-19) by employee residence',
         provider: 'OCSI',
-        description: `<ul>
-        <ul>
-            <li>The ONS Business Impact of Coronavirus Survey (BICS) includes data on the furloughing 
-            of workers across UK businesses between March 23 to April 5, 2020.</li>
-            <li>This data includes responses from businesses that were either still trading or had temporarily 
-            paused trading.  The figures are summarised in this <a href="https://www.ons.gov.uk/generator?uri=/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/articles/furloughingofworkersacrossukbusinesses/23march2020to5april2020/574ca854&format=csv">table</a>.</li>
-            <li>This data has been mapped against the industrial composition of jobs for LSOAs, MSOAs and 
-            Local Authorities to estimate exposure to labour market risks associated with COVID-19.</li>
-            <li>Information on local jobs by industry is taken from the <a href="https://www.nomisweb.co.uk/query/construct/summary.asp?mode=construct&version=0&dataset=189">
-            Business Register and Employment 
-            Survey (BRES) 2018 open access data</a>  – with breakdowns by Industry Sections (which match 
-                against the ONS Industrial classifications).</li>
-        </ul>
-        <p>
-            Further detail on OCSI’s full methodology and analysis: 
-            <a href="https://ocsi.uk/2020/04/29/which-local-labour-markets-are-most-at-risk/">OCSI Labour markets at Risk: Data and analysis</a>
-        </p>`,
-        credits: ``,
         min: 0,
         max: 0.5,
         reverse: true,
@@ -170,19 +99,6 @@ const FIELDS = {
     'vulnerability_quintile': {
         name: 'COVID Vulnerability quintile',
         provider: 'British Red Cross',
-        description: `<ul>
-            <li>This index has been calculated using many different datasets, to articulate and define an index, different COVID-19 vulnerability components into one index. </li>
-            <li><a href="https://docs.google.com/document/d/1aWpzgvLKGEF5Ay_xVps17nnbT1zIEki7RGIIJXL5APo/edit#heading=h.a5ipgbuvnul8">Full methodology</a></li>
-            <li><a href="https://britishredcrosssociety.github.io/covid-19-vulnerability/">Other data and document links found on Github</a></li>
-        </ul>`,
-        credits: `<p>Designed and developed by <a href="https://twitter.com/matthewgthomas">Matt Thomas</a> 
-        and Ellen Gordon at the British Red Cross. With contributions from</p>
-        <ul>
-            <li><a href="https://github.com/MikeJohnPage">Mike Page</a> (British Red Cross)</li>
-            <li><a href="https://twitter.com/tlrss">Tom Russell</a> (University of Oxford)</li>
-            <li><a href="https://github.com/obisargoni">Obi Thompson Sargoni</a> (Centre for Advanced Spatial Analysis, University College London)</li>
-            <li><a href="https://twitter.com/geo_brianj">Brian Johnston</a> (Queens University Belfast)</li>
-        </ul>`,
         min: 1,
         max: 5,
         reverse: true,
