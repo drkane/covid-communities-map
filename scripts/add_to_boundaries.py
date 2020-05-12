@@ -7,16 +7,17 @@ import tqdm
 
 msoalookup = pd.read_csv('data/sources/msoa_la.csv', index_col='MSOA11CD')
 msoalookup.loc[:, "MSOA11HCLNM"] = msoalookup["MSOA11HCLNM"].fillna(msoalookup['MSOA11NM'])
-sedldata = pd.read_csv('data/sedldata.csv', index_col='msoa11cd')
+sedldata = pd.read_excel('data/MSOA & Ward datasets_12-05-2020 v4.xlsx',
+                         index_col='msoa11cd', sheet_name='MSOA_inc_Scot_NI')
 brc_vulnerability = pd.read_csv(
     'data/sources/vulnerability-MSOA-UK.csv', index_col='Code')
 column_rename = {
     'At risk jobs (as a result of COVID-19) by location of job': 'jobs_at_risk_workplace',
     'At risk employees (as a result of COVID-19) by employee residence': 'jobs_at_risk_residence',
-    'Total Sales Change (week to previous year)': 'sales_change_total',
-    'Total Sales Change (week to previous year)_bucket': 'sales_change_total_bucket',
-    'Grocery Sales Change (week to previous year)': 'sales_change_grocery',
-    'Grocery Sales Change (week to previous year)_bucket': 'sales_change_grocery_bucket',
+    'Total Sales Change (month to previous year)': 'sales_change_total',
+    'Total Sales Change (month to previous year)_bucket': 'sales_change_total_bucket',
+    'Grocery Sales Change (month to previous year)': 'sales_change_grocery',
+    'Grocery Sales Change (month to previous year)_bucket': 'sales_change_grocery_bucket',
 }
 sedldata = sedldata.rename(columns=column_rename)
 brc_vulnerability.loc[:, "Vulnerability quintile"] = brc_vulnerability['Vulnerability decile'].replace({

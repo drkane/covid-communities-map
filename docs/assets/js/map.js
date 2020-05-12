@@ -439,7 +439,7 @@ map.on('load', function () {
     map.addLayer({
         'id': 'sedldata',
         'source': 'sedldata',
-        'source-layer': 'msoa_data',
+        'source-layer': SOURCE_LAYER,
         'type': 'fill',
         'layout': {},
         // 'filter': ['==', ['get', 'left_behind'], 'Y'],
@@ -452,10 +452,10 @@ map.on('load', function () {
     map.addLayer({
         'id': 'sedldata-highlight',
         'source': 'sedldata',
-        'source-layer': 'msoa_data',
+        'source-layer': SOURCE_LAYER,
         'type': 'line',
         'layout': {},
-        'filter': ['==', ['get', 'msoa11cd'], ''],
+        'filter': ['==', ['get', 'areacode'], ''],
         'paint': {
             'line-color': '#0079b9',
             'line-width': 3,
@@ -484,8 +484,8 @@ map.on('click', 'sedldata', function (e) {
 
     var features = map.queryRenderedFeatures(e.point);
 
-    var displayFeaturesText = `<h2 class="pa0 ma0 mb2">${features[0].properties.MSOA11HCLNM}</h2>
-        <h3 class="pa0 ma0 mb2"><span class="f6 gray normal"> in </span>${features[0].properties.UTLANM }</h3>
+    var displayFeaturesText = `<h2 class="pa0 ma0 mb2">${features[0].properties.areaname}</h2>
+        <h3 class="pa0 ma0 mb2"><span class="f6 gray normal">${features[0].properties.areatype} in </span>${features[0].properties.UTLANM }</h3>
         <ul class="list pa0 ma0 flex flex-wrap">`
     Object.entries(FIELDS).forEach(([key, value]) => {
         if (features[0].properties[key]){
@@ -500,17 +500,17 @@ map.on('click', 'sedldata', function (e) {
     });
     displayFeaturesText += `</ul>`;
 
-    if (features[0].properties.MSOA11HCLNM){
+    if (features[0].properties.areaname){
         // popup
         //     .setLngLat(e.lngLat)
         //     .setHTML(displayFeaturesText)
         //     .addTo(map);
         areaDisplay.innerHTML = displayFeaturesText;
-        map.setFilter('sedldata-highlight', ['==', ['get', 'msoa11cd'], features[0].properties.msoa11cd]);
+        map.setFilter('sedldata-highlight', ['==', ['get', 'areacode'], features[0].properties.areacode]);
     } else {
         // popup.remove();
         areaDisplay.innerHTML = '';
-        map.setFilter('sedldata-highlight', ['==', ['get', 'msoa11cd'], '']);
+        map.setFilter('sedldata-highlight', ['==', ['get', 'areacode'], '']);
     }
 });
 

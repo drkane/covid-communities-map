@@ -24,6 +24,8 @@
 - Step 2: Turn Scotland and NI boundaries into geojson - `shp_to_geojson.py`
 - Step 3: Merge geojson from Scotland, NI & England and Wales - `shp_to_geojson.py`
 - Step 4: Add lookups to MSOA boundaries from [geo-lookups](https://github.com/drkane/geo-lookups/) and merge in source data - `add_to_boundaries.py`
+- Step 5: Add lookups to ward boundaries from [geo-lookups](https://github.com/drkane/geo-lookups/) and merge in source data for Northern Ireland - `add_to_boundaries_ni.py`
+- Step 6: Merge the boundaries together to create the final UK dataset - `combine_boundaries.py`
 - Step 5: Use Tippecanoe to create mbtiles from geojson - `maketiles.sh`
 - create TTWA boundaries and lookups
 
