@@ -25,7 +25,7 @@ const COLOUR_RAMP = [
 
 const FIELDS = {
     'sales_change_total_bucket': {
-        name: 'Total Sales Change (week to previous year)',
+        name: 'Total Sales Change (month to previous year)',
         provider: 'Imfoco',
         fillColor: {
             property: 'sales_change_total_bucket',
@@ -53,7 +53,7 @@ const FIELDS = {
     //     nformat: (n) => Number(n).toLocaleString(undefined, {style: 'percent'}),
     // },
     'sales_change_grocery_bucket': {
-        name: 'Grocery Sales Change (week to previous year)',
+        name: 'Grocery Sales Change (month to previous year)',
         provider: 'Imfoco',
         fillColor: {
             property: 'sales_change_grocery_bucket',
@@ -99,6 +99,13 @@ const FIELDS = {
     'vulnerability_quintile': {
         name: 'COVID Vulnerability quintile',
         provider: 'British Red Cross',
+        colours: [
+            1, COLOUR_RAMP[0],
+            2, COLOUR_RAMP[5],
+            3, COLOUR_RAMP[10],
+            4, COLOUR_RAMP[14],
+            5, COLOUR_RAMP[19],
+        ],
         min: 1,
         max: 5,
         reverse: true,
@@ -163,6 +170,7 @@ function interpolateField(field_id){
     if(field.fillColor){
         return field.fillColor;
     }
+    
     var startColour = COLOUR_RAMP[0];
     var endColour = COLOUR_RAMP[COLOUR_RAMP.length - 1];
     var midColour = COLOUR_RAMP[COLOUR_RAMP.length / 2];
@@ -171,14 +179,16 @@ function interpolateField(field_id){
         endColour = COLOUR_RAMP[0];
     }
 
-    if(field.min < 0){
-        colours = [
+    if (field.colours) {
+        var colours = field.colours;
+    } else if(field.min < 0){
+        var colours = [
             field.min, startColour,
             0, midColour,
             field.max, endColour,
         ]
     } else {
-        colours = [
+        var colours = [
             field.min, startColour,
             (field.min + field.max) / 2, midColour,
             field.max, endColour,
