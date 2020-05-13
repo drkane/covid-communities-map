@@ -452,7 +452,7 @@ map.on('load', function () {
         'source-layer': SOURCE_LAYER,
         'type': 'fill',
         'layout': {},
-        // 'filter': ['==', ['get', 'left_behind'], 'Y'],
+        'filter': ['!=', ["slice", ['get', 'areacode'], 0, 1], 'N'],
         'paint': {
             'fill-color': interpolateField(currentField),
             'fill-opacity': 0.5,
