@@ -31,22 +31,29 @@
                     <select class="fl w-100 f4" id="field-select">
                     </select>
                 </div>
-                <div class="dib pa2 w-100 w-50-ns fl">
-                    <label class="fl f6 mb1 w-100" for="area-select">Go to area</label>
-                    <select class="fl w-100" id="area-select">
+                <div class="dib pa2 w-50 w-50-ns fl">
+                    <label class="fl f6 mb1 w-50" for="area-select">Go to area</label>
+                    <select class="fl w-50" id="area-select">
                         <option value="">Select area</option>
                     </select>
                     <a href="#" id="reset-map" class="link underline blue f6 w-100">Reset map</a>
                 </div>
-                <div class="dib pa2 w-100 w-50-ns fl">
-                    <label class="fl f6 mb1 w-100" for="vulnerability-quintile">Vulnerability quintile</label>
-                    <select class="fl w-100" id="vulnerability-quintile">
+                <div class="dib pa2 w-50 w-50-ns fl">
+                    <label class="fl f6 mb1 w-50" for="vulnerability-quintile">Vulnerability quintile</label>
+                    <select class="fl w-50" id="vulnerability-quintile">
                         <option value="">Show all areas</option>
                         <option value="1">1 - least vulnerable</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
                         <option value="4">4</option>
                         <option value="5">5 - most vulnerable</option>
+                    </select>
+                </div>
+                <div class="dib pa2 w-50 w-50-ns fl">
+                    <label class="fl f6 mb1 w-50" for="month">Month</label>
+                    <select class="fl w-50" id="month">
+                        <option value="April">April</option>
+                        <option value="May">May</option>
                     </select>
                 </div>
             </div>
@@ -128,7 +135,7 @@
     </div>
     <script>
         const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic2VkbCIsImEiOiJja2EybHlpMXMwNTZ3M2dxYmdlOTUyMW1uIn0.UCtzAM2u3i1X_0F4orMBhQ';
-        const TILESET_URL = 'mapbox://sedl.20ku54bc';
+        const TILESET_URL = 'mapbox://sedl.8balpp2t';
         const SOURCE_LAYER = 'all_data';
         const STARTING_LATLNG = [-2.89479, 54.093409]; // original: [-1.485, 52.567],
         const STARTING_ZOOM = 5;

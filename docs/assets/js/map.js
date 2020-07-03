@@ -302,7 +302,8 @@ map.on('load', function () {
     //         });
     //     });
 
-    fetch('assets/data/ttwa_boundaries.geojson')
+    // fetch('assets/data/ttwa_boundaries.geojson')
+    fetch('https://raw.githubusercontent.com/SocialEconomyDataLab/covid-communities-map/master/docs/assets/data/ttwa_boundaries.geojson')
         .then(r => r.json())
         .then(geojson => {
             map.addSource('highlightArea', {
@@ -440,7 +441,17 @@ map.on('load', function () {
         } else {
             map.setFilter('sedldata', ['==', ['get', 'vulnerability_quintile'], parseFloat(vulnerability_quintile)])
         }
-    })
+    });
+
+    document.getElementById('month').addEventListener('input', (ev) => {
+        ev.preventDefault();
+        var month = ev.target.value;
+        if (month == "") {
+            map.setFilter('sedldata', ['==', ['get', 'month'], 'April']);
+        } else {
+            map.setFilter('sedldata', ['==', ['get', 'month'], month])
+        }
+    });
 
     map.addSource('sedldata', {
         type: 'vector',
