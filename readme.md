@@ -26,6 +26,27 @@
 - Step 4: Add lookups to MSOA boundaries from [geo-lookups](https://github.com/drkane/geo-lookups/) and merge in source data - `add_to_boundaries.py`
 - Step 5: Add lookups to ward boundaries from [geo-lookups](https://github.com/drkane/geo-lookups/) and merge in source data for Northern Ireland - `add_to_boundaries_ni.py`
 - Step 6: Merge the boundaries together to create the final UK dataset - `combine_boundaries.py`
-- Step 5: Use Tippecanoe to create mbtiles from geojson - `maketiles.sh`
+- Step 7: Use Tippecanoe to create mbtiles from geojson - `maketiles.sh`
+
+Also needed:
+
 - create TTWA boundaries and lookups
 
+# Add additional month data
+
+The new data should be in an excel spreadsheet in the same format as the previous month.
+The spreadsheet should have a tab called `MSOA_inc_Scot_NI`, with the following columns.
+The column names should exactly match the ones given:
+
+ - `msoa11cd` - code of the MSOA
+ - `msoa11nm` - name of the MSOA (not used)
+ - `Vulnerability MSOA quintile` - BRC Vulnerability quintile (not used)
+ - `At risk jobs (as a result of COVID-19) by location of job`
+ - `At risk employees (as a result of COVID-19) by employee residence`
+ - `Total Sales Change (month to previous year)`
+ - `Total Sales Change (month to previous year)_bucket`
+ - `Grocery Sales Change (month to previous year)`
+ - `Grocery Sales Change (month to previous year)_bucket`
+ - `Month` - should be in format `2020_05`
+
+Once this has been created, run steps 4-7 above to update the data, and add a new source tileset in mapbox.

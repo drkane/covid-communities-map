@@ -2,3 +2,5 @@ data/boundaries/*
 !data/boundaries/.gitkeep 
 data/*
 !data/.gitkeep
+
+!data/sources.csv
