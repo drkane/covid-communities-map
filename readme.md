@@ -53,4 +53,9 @@ You can pass the file and tab names to the `add_to_boundaries.py` script, like t
 python scripts/add_to_boundaries --sedldata data/new_filename.xlsx --sedldata-tab MSOA_inc_Scot_NI
 ```
 
-Once this has been created, run steps 4 and 5 above to update the data, and add a new source tileset in mapbox.
+Once this has been created, run steps 4 and 5 above to update the data, and add a new source tileset in mapbox (or replace the existing one).
+
+Finally, you'll need to update a couple of variables at the bottom of [`index.html`](docs/index.html):
+
+- `TILESET_URL` will need to be set to the new Tileset ID from mapbox, unless you've replaced the existing one
+- `MONTHS` - you'll need to add a new line to this object, with the ID of the month you've added (eg `2020_07`) and how you would like it to appear in the interface (`July 2020`)
