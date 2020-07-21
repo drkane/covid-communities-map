@@ -99,6 +99,8 @@ print("Add sales change data")
 geo = geo.join(sedldata, on='msoa11cd')
 print("Add BRC data")
 geo = geo.join(brc_vulnerability[brc_columns_to_include], on='msoa11cd')
+print("Exclude NI data")
+geo = geo[geo.CTRYCD != 'N92000002']
 print("Save CSV output")
 geo.drop(columns='geometry').to_csv(args.output_data, index=False)
 print("Save geojson output")

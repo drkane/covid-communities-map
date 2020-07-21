@@ -24,9 +24,7 @@
 - Step 2: Turn Scotland and NI boundaries into geojson - `shp_to_geojson.py`
 - Step 3: Merge geojson from Scotland, NI & England and Wales - `shp_to_geojson.py`
 - Step 4: Add lookups to MSOA boundaries from [geo-lookups](https://github.com/drkane/geo-lookups/) and merge in source data - `add_to_boundaries.py`
-- Step 5: Add lookups to ward boundaries from [geo-lookups](https://github.com/drkane/geo-lookups/) and merge in source data for Northern Ireland - `add_to_boundaries_ni.py`
-- Step 6: Merge the boundaries together to create the final UK dataset - `combine_boundaries.py`
-- Step 7: Use Tippecanoe to create mbtiles from geojson - `maketiles.sh`
+- Step 5: Use Tippecanoe to create mbtiles from geojson - `maketiles.sh`
 
 Also needed:
 
@@ -49,4 +47,10 @@ The column names should exactly match the ones given:
  - `Grocery Sales Change (month to previous year)_bucket`
  - `Month` - should be in format `2020_05`
 
-Once this has been created, run steps 4-7 above to update the data, and add a new source tileset in mapbox.
+You can pass the file and tab names to the `add_to_boundaries.py` script, like this:
+
+```sh
+python scripts/add_to_boundaries --sedldata data/new_filename.xlsx --sedldata-tab MSOA_inc_Scot_NI
+```
+
+Once this has been created, run steps 4 and 5 above to update the data, and add a new source tileset in mapbox.
