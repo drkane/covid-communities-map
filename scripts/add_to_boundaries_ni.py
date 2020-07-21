@@ -10,10 +10,10 @@ sedldata = pd.read_excel('data/MSOA & Ward datasets_12-05-2020 v4.xlsx',
                          index_col='WD17CD', sheet_name='Full ward dataset')
 column_rename = {
     'Vulnerability ward quintile': 'vulnerability_quintile',
-    'Total Sales Change (week to previous year)': 'sales_change_total',
-    'Total Sales Change (week to previous year)_bucket': 'sales_change_total_bucket',
-    'Grocery Sales Change (week to previous year)': 'sales_change_grocery',
-    'Grocery Sales Change (week to previous year)_bucket': 'sales_change_grocery_bucket',
+    'Total Sales Change (week to previous year)': 'sales_change_total_2020_04',
+    'Total Sales Change (week to previous year)_bucket': 'sales_change_total_bucket_2020_04',
+    'Grocery Sales Change (week to previous year)': 'sales_change_grocery_2020_04',
+    'Grocery Sales Change (week to previous year)_bucket': 'sales_change_grocery_bucket_2020_04',
 }
 sedldata = sedldata.rename(columns=column_rename)
 sedldata = sedldata[sedldata.index.str.startswith("N")]

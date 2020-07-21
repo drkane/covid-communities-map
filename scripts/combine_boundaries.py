@@ -40,19 +40,32 @@ ews.loc[:, "areatype"] = 'MSOA'
 ews = ews.rename(columns={
     'msoa11cd': 'areacode',
     'MSOA11HCLNM': 'areaname'
-})[columns_to_include]
+})
+ews_cols = []
+# THIS PART DOESN'T WORK!!
+for c in ews.columns:
+    if c in columns_to_include:
+        ews_cols.append(c)
+        continue
+    for ci in columns_to_include:
+        if c.startswith(ci):
+            ews_cols.append(c)
+ews = ews[ews_cols]
 
 # data on wards for Northern Ireland
 ni = gpd.read_file('data/boundaries/ward_data_ni.geojson')
 ni.loc[:, "areatype"] = 'ward'
-ni.loc[:, 'jobs_at_risk_workplace'] = None
-ni.loc[:, 'jobs_at_risk_residence'] = None
-ni.loc[:, 'jobs_at_risk_workplace'] = ni['jobs_at_risk_workplace'].astype('float64')
-ni.loc[:, 'jobs_at_risk_residence'] = ni['jobs_at_risk_residence'].astype('float64')
 ni = ni.rename(columns={
     'wd17cd': 'areacode',
     'wd17nm': 'areaname'
-})[columns_to_include]
+})
+
+for c in ews_cols:
+    if c not in ni.columns:
+        ni.loc[:, c] = None
+        ni.loc[:, c] = ni[c].astype('float64')
+
+ni = ni[ews_cols]
 
 uk = gpd.GeoDataFrame(
     pd.concat([ews, ni], ignore_index=True),

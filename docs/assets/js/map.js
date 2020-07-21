@@ -23,10 +23,23 @@ const COLOUR_RAMP = [
     "#45fc46",
 ]
 
+const VULNERABILITY_QUINTILES = {
+    1: "1 - least vulnerable",
+    2: "2",
+    3: "3",
+    4: "4",
+    5: "5 - most vulnerable",
+}
+
+const AREACODE_FIELD = 'msoa11cd';
+const AREANAME_FIELD = 'MSOA11HCLNM';
+const FIELD_MATCH = /(.*)_([0-9]{4}_[0-9]{2})/;
+
 const FIELDS = {
     'sales_change_total_bucket': {
         name: 'Total Sales Change (month to previous year)',
         provider: 'Imfoco',
+        hasMonths: true,
         fillColor: {
             property: 'sales_change_total_bucket',
             type: 'categorical',
@@ -55,6 +68,7 @@ const FIELDS = {
     'sales_change_grocery_bucket': {
         name: 'Grocery Sales Change (month to previous year)',
         provider: 'Imfoco',
+        hasMonths: true,
         fillColor: {
             property: 'sales_change_grocery_bucket',
             type: 'categorical',
@@ -86,6 +100,7 @@ const FIELDS = {
         min: 0,
         max: 0.5,
         reverse: true,
+        hasMonths: false,
         nformat: (n) => Number(n).toLocaleString(undefined, { style: 'percent' }),
     },
     'jobs_at_risk_residence': {
@@ -94,6 +109,7 @@ const FIELDS = {
         min: 0,
         max: 0.5,
         reverse: true,
+        hasMonths: false,
         nformat: (n) => Number(n).toLocaleString(undefined, { style: 'percent' }),
     },
     'vulnerability_quintile': {
@@ -109,6 +125,7 @@ const FIELDS = {
         min: 1,
         max: 5,
         reverse: true,
+        hasMonths: false,
     },
     // 'vulnerability_decile': {
     //     name: 'British Red Cross COVID Vulnerability decile',
@@ -128,403 +145,355 @@ const FIELDS = {
     // },
 }
 
-var currentField = 'sales_change_total_bucket';
 
-var fieldSelect = document.getElementById('field-select');
-Object.entries(FIELDS).forEach(([key, value])=> {
-    var opt = document.createElement('option');
-    opt.setAttribute('value', key);
-    opt.innerText = value.name;
-    fieldSelect.append(opt);
-})
-
-mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
-var map = new mapboxgl.Map({
-    container: 'map',
-    style: MAP_STYLE,
-    zoom: STARTING_ZOOM,
-    center: STARTING_LATLNG,
-    minZoom: 4,
-    maxZoom: 18,
-    maxBounds: MAX_BOUNDS,
-});
-
-// Add geolocate control to the map.
-map.addControl(
-    new mapboxgl.GeolocateControl({
-        positionOptions: {
-            enableHighAccuracy: true
-        },
-        trackUserLocation: true
-    })
-);
-map.addControl(
-    new mapboxgl.NavigationControl()
-);
-
-var boundaries = {};
-
-function interpolateField(field_id){
-    currentField = field_id;
-    var field = FIELDS[field_id];
-    if(field.fillColor){
-        return field.fillColor;
-    }
-    
-    var startColour = COLOUR_RAMP[0];
-    var endColour = COLOUR_RAMP[COLOUR_RAMP.length - 1];
-    var midColour = COLOUR_RAMP[COLOUR_RAMP.length / 2];
-    if(field.reverse){
-        startColour = COLOUR_RAMP[COLOUR_RAMP.length - 1];
-        endColour = COLOUR_RAMP[0];
-    }
-
-    if (field.colours) {
-        var colours = field.colours;
-    } else if(field.min < 0){
-        var colours = [
-            field.min, startColour,
-            0, midColour,
-            field.max, endColour,
-        ]
-    } else {
-        var colours = [
-            field.min, startColour,
-            (field.min + field.max) / 2, midColour,
-            field.max, endColour,
-        ]
-    }
-
-    return [
-        "interpolate",
-        ["linear"],
-        ["get", field_id],
-    ].concat(colours);
-        // -100, "#FA0000",
-        // 0, "#FFFF00",
-        // 100, "#73FF00",
-        // 1000, "#00FF00",
-        // 1, "#0864A7",
-        // 2, "#0978C7",
-        // 3, "#2690CC",
-        // 4, "#4AADD2",
-        // 5, "#7DCBD8",
-        // 6, "#B0E1D6",
-        // 7, "#D3EED5",
-        // 8, "#E3F5D8",
-        // 9, "#EFFCCA",
-        // 10, "#FBFCB9"
-}
-
-function addItemToLegend(legend, colour, text) {
-    // create legend item
-    var li = document.createElement('li');
-    li.classList.add('pa0', 'ma0', 'flex', 'items-center', 'f6')
-
-    // create legend colour
-    var colourBlock = document.createElement('span');
-    colourBlock.classList.add('h1', 'w1', 'dib', 'mr2');
-    colourBlock.style.backgroundColor = colour;
-    li.append(colourBlock);
-
-    // create legend text
-    var legendText = document.createElement('span');
-    legendText.innerText = text;
-    legendText.classList.add('v-mid')
-    li.append(legendText);
-
-    // add to legend
-    legend.append(li);
-}
-
-function setField(map, field_id) {
-    var field = FIELDS[field_id];
-    var colours = interpolateField(field_id);
-
-    var legend = document.getElementById('map-legend');
-    document.getElementById('map-legend-title').innerText = field.name;
-    document.getElementById('map-legend-provider').innerHTML = field.provider || '';
-    document.getElementById('map-legend-description').innerHTML = field.description || '';
-    document.getElementById('map-legend-source').innerHTML = field.credits || '';
-    legend.innerHTML = '';
-    if(colours.stops){
-        colours.stops.forEach(([text, colour]) => {
-            addItemToLegend(legend, colour, text);
-        })
-    } else {
-        colours.slice(3).reduce((all, v, i) => {
-            if (i % 2) {
-                all[all.length - 1].push(v);
-                return all;
-            } else {
-                return [...all, [v]];
-            }
-        }, []).forEach(c => {
-            if(field.nformat){
-                addItemToLegend(legend, c[1], field.nformat(parseFloat(c[0])));
-            } else {
-                addItemToLegend(legend, c[1], c[0]);
-            }
-        });
-    }
-
-    map.setPaintProperty('sedldata', 'fill-color', colours);
-    // map.setFilter('sedldata', ["any", ["get", field_id]]);
-}
-
-// add imd2019
-map.on('load', function () {
-
-    Array.from(document.getElementsByClassName('toggle-about')).forEach((el) => {
-        el.addEventListener('click', (ev) => {
-            ev.preventDefault();
-            document.getElementById('about-data').classList.toggle('dn');
-        })
-    })
-
-    document.getElementById('reset-map').addEventListener('click', (ev) => {
-        ev.preventDefault();
-        map.flyTo({ center: STARTING_LATLNG, zoom: STARTING_ZOOM });
-        if (map.getLayer('highlightAreaBBox')) {
-            map.removeLayer('highlightAreaBBox');
-            map.removeSource('highlightAreaBBox');
+var app = new Vue({
+    el: '#app',
+    data() {
+        return {
+            currentField: Object.keys(FIELDS)[0],
+            currentMonth: Object.keys(MONTHS).slice(-1)[0],
+            currentArea: "",
+            currentVulnerabilityQuintile: "",
+            highlightedArea: null,
+            fields: FIELDS,
+            months: MONTHS,
+            vulnerabilityQuintiles: VULNERABILITY_QUINTILES,
+            areas: null,
+            loading: true,
+            boundaries: null,
+            map: null,
+            accessToken: MAPBOX_ACCESS_TOKEN,
+            showAbout: false,
+            charts: {},
         }
-    });
-
-    // fetch('assets/data/areas.json')
-    //     .then(r => r.json())
-    //     .then(r => {
-    //         r.ttwa.forEach((area) => {
-    //             var areaOption = document.createElement('option');
-    //             areaOption.innerText = area[1];
-    //             areaOption.value = area[0];
-    //             document.getElementById('area-select').append(areaOption);
-    //         });
-    //     });
-
-    fetch('assets/data/ttwa_boundaries.geojson')
-        .then(r => r.json())
-        .then(geojson => {
-            map.addSource('highlightArea', {
-                'type': 'geojson',
-                'data': geojson
-            });
-            boundaries = geojson;
-            geojson.features.map((f) => {
-                return {
-                    name: f.properties.ttwa11nm,
-                    id: f.properties.ttwa11cd
-                }
-            }).sort(function (a, b) {
-                if (a.name > b.name) {
-                    return 1;
-                }
-                if (a.name < b.name) {
-                    return -1;
-                }
-                return 0;
-            }).forEach((f) => {
-                var areaOption = document.createElement('option');
-                areaOption.innerText = f.name;
-                areaOption.value = f.id;
-                document.getElementById('area-select').append(areaOption);
-            });
-        })
-        .catch((error) => {
-            console.log(error);
+    },
+    mounted () {
+        
+        mapboxgl.accessToken = this.accessToken;
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: MAP_STYLE,
+            zoom: STARTING_ZOOM,
+            center: STARTING_LATLNG,
+            minZoom: 4,
+            maxZoom: 18,
+            maxBounds: MAX_BOUNDS,
         });
-    
-    document.getElementById('area-select').addEventListener('input', (ev) => {
-        ev.preventDefault();
-        var areaCode = ev.target.value;
-        if(!areaCode){
-            if (map.getLayer('highlightArea')) {
-                map.removeLayer('highlightArea');
+        this.map = map;
+        var component = this;
+        
+        map.on('load', function () {
+        
+            // Add geolocate control to the map.
+            map.addControl(
+                new mapboxgl.GeolocateControl({
+                    positionOptions: {
+                        enableHighAccuracy: true
+                    },
+                    trackUserLocation: true
+                })
+            );
+            map.addControl(
+                new mapboxgl.NavigationControl()
+            );
+
+            map.addSource('sedldata', {
+                type: 'vector',
+                url: TILESET_URL,
+            });
+            map.addLayer({
+                'id': 'sedldata',
+                'source': 'sedldata',
+                'source-layer': SOURCE_LAYER,
+                'type': 'fill',
+                'layout': {},
+                'filter': ['!=', ["slice", ['get', AREACODE_FIELD], 0, 1], 'N'],
+                'paint': {
+                    'fill-color': 'white',
+                    'fill-opacity': 0.5,
+                    'fill-antialias': false,
+                },
+            });
+            map.addLayer({
+                'id': 'sedldata-highlight',
+                'source': 'sedldata',
+                'source-layer': SOURCE_LAYER,
+                'type': 'line',
+                'layout': {},
+                'filter': ['==', ['get', AREACODE_FIELD], ''],
+                'paint': {
+                    'line-color': '#0079b9',
+                    'line-width': 3,
+                },
+            });
+  
+            map.on('dragend', (ev) => {
+                if (map.getLayer('highlightArea')) {
+                    map.removeLayer('highlightArea');
+                }
+                if (map.getLayer('highlightAreaBBox')) {
+                    map.removeLayer('highlightAreaBBox');
+                    map.removeSource('highlightAreaBBox');
+                }
+            });
+
+            map.on('mousemove', 'sedldata', function (e) {
+                // Change the cursor style as a UI indicator.
+                map.getCanvas().style.cursor = 'pointer';
+            });
+            
+            map.on('click', 'sedldata', function (e) {
+                // Change the cursor style as a UI indicator.
+                map.getCanvas().style.cursor = 'pointer';
+            
+                var features = map.queryRenderedFeatures(e.point);
+                if (features[0].properties[AREANAME_FIELD]){
+                    component.highlightedArea = features[0];
+                    map.setFilter('sedldata-highlight', ['==', ['get', AREACODE_FIELD], features[0].properties[AREACODE_FIELD]]);
+                } else {
+                    component.highlightedArea = null;
+                    map.setFilter('sedldata-highlight', ['==', ['get', AREACODE_FIELD], '']);
+                }
+            });
+            
+            map.on('mouseleave', 'sedldata', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+            fetch('assets/data/ttwa_boundaries.geojson')
+                .then(r => r.json())
+                .then(geojson => {
+                    component.map.addSource('highlightArea', {
+                        'type': 'geojson',
+                        'data': geojson
+                    });
+                    component.boundaries = geojson;
+                    component.areas = geojson.features.map((f) => {
+                        return {
+                            name: f.properties.ttwa11nm,
+                            id: f.properties.ttwa11cd
+                        }
+                    }).sort(function (a, b) {
+                        if (a.name > b.name) {
+                            return 1;
+                        }
+                        if (a.name < b.name) {
+                            return -1;
+                        }
+                        return 0;
+                    });
+                })
+                .catch((error) => {
+                    console.log(error);
+                })
+                .finally(() => {
+                    component.loading = false;
+                    component.updateMap();
+                });
+        });
+    },
+    watch: {
+        currentField: function(){ this.updateMap(); },
+        currentMonth: function(){ this.updateMap(); },
+        currentVulnerabilityQuintile: function(){ this.updateMap(); },
+        currentArea: function(){ this.selectArea(); },
+    },
+    computed: {
+        field: function(){
+            return this.fields[this.currentField];
+        },
+        field_id: function(){
+            if(this.field.hasMonths){
+                return this.currentField + "_" + this.currentMonth;
             }
-            if (map.getLayer('highlightAreaBBox')) {
+            return this.currentField;
+        },
+        colours: function(){
+            
+            if(this.field.fillColor){
+                var colours = this.field.fillColor;
+                colours.property = this.field_id;
+                return colours;
+            }
+            
+            var startColour = COLOUR_RAMP[0];
+            var endColour = COLOUR_RAMP[COLOUR_RAMP.length - 1];
+            var midColour = COLOUR_RAMP[COLOUR_RAMP.length / 2];
+            if(this.field.reverse){
+                startColour = COLOUR_RAMP[COLOUR_RAMP.length - 1];
+                endColour = COLOUR_RAMP[0];
+            }
+        
+            if (this.field.colours) {
+                var colours = this.field.colours;
+            } else if(this.field.min < 0){
+                var colours = [
+                    this.field.min, startColour,
+                    0, midColour,
+                    this.field.max, endColour,
+                ]
+            } else {
+                var colours = [
+                    this.field.min, startColour,
+                    (this.field.min + this.field.max) / 2, midColour,
+                    this.field.max, endColour,
+                ]
+            }
+        
+            return [
+                "interpolate",
+                ["linear"],
+                ["get", this.field_id],
+            ].concat(colours);
+        },
+        areaName: function(){
+            if(!this.highlightedArea){return "";}
+            return this.highlightedArea.properties[AREANAME_FIELD];
+        },
+        areaValues: function(){
+            if(!this.highlightedArea){
+                return {}
+            }
+            var values = {};
+            Object.entries(this.highlightedArea.properties).forEach(([pkey, pvalue]) => {
+                var match = pkey.match(FIELD_MATCH);
+                Object.entries(this.fields).forEach(([fkey, fvalue]) => {
+                    var value = pvalue;
+                    if(fvalue.nformat){
+                        value = fvalue.nformat(parseFloat(value));
+                    }
+                    if(fkey==pkey){
+                        values[fkey] = value;
+                    } else if(match && match[1]==fkey) {
+                        if(!(fkey in values)){
+                            values[fkey] = {}
+                        }
+                        values[fkey][match[2]] = value;
+                    }
+                });
+            });
+            return values;
+        },
+        legendItems: function(){
+            var items = [];
+            if(this.colours.stops){
+                this.colours.stops.forEach(([text, colour]) => {
+                    items.push({
+                        colour: colour,
+                        text: text
+                    });
+                })
+            } else {
+                this.colours.slice(3).reduce((all, v, i) => {
+                    if (i % 2) {
+                        all[all.length - 1].push(v);
+                        return all;
+                    } else {
+                        return [...all, [v]];
+                    }
+                }, []).forEach(c => {
+                    if(this.field.nformat){
+                        items.push({
+                            colour: c[1],
+                            text: this.field.nformat(parseFloat(c[0]))
+                        });
+                    } else {
+                        items.push({
+                            colour: c[1],
+                            text: c[0]
+                        });
+                    }
+                });
+            }
+            return items;
+        }
+    },
+    methods: {
+        updateMap: function(){
+            this.map.setPaintProperty('sedldata', 'fill-color', this.colours);
+            if(this.currentVulnerabilityQuintile==""){
+                this.map.setFilter('sedldata', null);
+            } else {
+                this.map.setFilter(
+                    'sedldata', 
+                    [
+                        '==',
+                        ['get', 'vulnerability_quintile'],
+                        parseFloat(this.currentVulnerabilityQuintile)
+                    ]
+                )
+            }
+        },
+        resetMap: function(){
+            this.currentArea = "";
+            if(!this.map){
+                return;
+            }
+            this.map.flyTo({ center: STARTING_LATLNG, zoom: STARTING_ZOOM });
+            if (this.map.getLayer('highlightAreaBBox')) {
+                this.map.removeLayer('highlightAreaBBox');
+                this.map.removeSource('highlightAreaBBox');
+            }
+        },
+        selectArea: function(){
+            var map = this.map;
+
+            // reset the area bbox
+            if (map.getLayer('highlightAreaBBox')){
                 map.removeLayer('highlightAreaBBox');
                 map.removeSource('highlightAreaBBox');
             }
-            return;
-        }
-        var geojson = boundaries.features.find((b) => b.properties.ttwa11cd == areaCode);
-        // var filter = ['==', ['get', 'ttwa11cd'], areaCode];
-        // if (map.getLayer('highlightArea')){
-        //     map.setFilter('highlightArea', filter)
-        // } else {
-        //     map.addLayer({
-        //         'id': 'highlightArea',
-        //         'type': 'line',
-        //         'source': 'highlightArea',
-        //         'filter': filter,
-        //         'layout': {
-        //             'line-join': 'round',
-        //         },
-        //         'paint': {
-        //             'line-color': '#000',
-        //             'line-width': 3,
-        //         }
-        //     });
-        // }
-        var geojsonBounds = bbox(geojson);
-        var sw = new mapboxgl.LngLat(geojsonBounds[0], geojsonBounds[1]);
-        var ne = new mapboxgl.LngLat(geojsonBounds[2], geojsonBounds[3]);
-        var llb = new mapboxgl.LngLatBounds(sw, ne);
 
-        if (map.getLayer('highlightAreaBBox')){
-            map.removeLayer('highlightAreaBBox');
-            map.removeSource('highlightAreaBBox');
-        }
-
-        map.addSource('highlightAreaBBox', {
-            'type': 'geojson',
-            'data': {
-                'type': 'Feature',
-                'geometry': {
-                    'type': 'Polygon',
-                    'coordinates': [
-                        [
-                            [0, 90],
-                            [180, 90],
-                            [180, -90],
-                            [0, -90],
-                            [-180, -90],
-                            [-180, 0],
-                            [-180, 90],
-                            [0, 90],
-                        ],[
-                            [geojsonBounds[0], geojsonBounds[1]],
-                            [geojsonBounds[0], geojsonBounds[3]],
-                            [geojsonBounds[2], geojsonBounds[3]],
-                            [geojsonBounds[2], geojsonBounds[1]],
-                        ]
-                    ]
+            if(!this.currentArea){
+                if (map.getLayer('highlightArea')) {
+                    map.removeLayer('highlightArea');
                 }
+                return;
             }
-        });
-        map.addLayer({
-            'id': 'highlightAreaBBox',
-            'type': 'fill',
-            'source': 'highlightAreaBBox',
-            'layout': {},
-            'paint': {
-                'fill-color': '#fff',
-                'fill-opacity': 0.8
-            }
-        });
-
-        map.fitBounds(llb, {padding: 20});
-    });
-
-    map.on('dragend', (ev) => {
-        if (map.getLayer('highlightArea')) {
-            map.removeLayer('highlightArea');
-        }
-        if (map.getLayer('highlightAreaBBox')) {
-            map.removeLayer('highlightAreaBBox');
-            map.removeSource('highlightAreaBBox');
-        }
-    });
+            var geojson = this.boundaries.features.find((b) => b.properties.ttwa11cd == this.currentArea);
+            var geojsonBounds = bbox(geojson);
+            var sw = new mapboxgl.LngLat(geojsonBounds[0], geojsonBounds[1]);
+            var ne = new mapboxgl.LngLat(geojsonBounds[2], geojsonBounds[3]);
+            var llb = new mapboxgl.LngLatBounds(sw, ne);
     
-    document.getElementById('field-select').addEventListener('input', (ev) => {
-        ev.preventDefault();
-        var field = ev.target.value;
-        setField(map, field);
-    });
+            map.addSource('highlightAreaBBox', {
+                'type': 'geojson',
+                'data': {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'Polygon',
+                        'coordinates': [
+                            [
+                                [0, 90],
+                                [180, 90],
+                                [180, -90],
+                                [0, -90],
+                                [-180, -90],
+                                [-180, 0],
+                                [-180, 90],
+                                [0, 90],
+                            ],[
+                                [geojsonBounds[0], geojsonBounds[1]],
+                                [geojsonBounds[0], geojsonBounds[3]],
+                                [geojsonBounds[2], geojsonBounds[3]],
+                                [geojsonBounds[2], geojsonBounds[1]],
+                            ]
+                        ]
+                    }
+                }
+            });
+            map.addLayer({
+                'id': 'highlightAreaBBox',
+                'type': 'fill',
+                'source': 'highlightAreaBBox',
+                'layout': {},
+                'paint': {
+                    'fill-color': '#fff',
+                    'fill-opacity': 0.8
+                }
+            });
     
-    document.getElementById('vulnerability-quintile').addEventListener('input', (ev) => {
-        ev.preventDefault();
-        var vulnerability_quintile = ev.target.value;
-        if(vulnerability_quintile==""){
-            map.setFilter('sedldata', null);
-        } else {
-            map.setFilter('sedldata', ['==', ['get', 'vulnerability_quintile'], parseFloat(vulnerability_quintile)])
-        }
-    })
-
-    map.addSource('sedldata', {
-        type: 'vector',
-        url: TILESET_URL,
-    });
-    map.addLayer({
-        'id': 'sedldata',
-        'source': 'sedldata',
-        'source-layer': SOURCE_LAYER,
-        'type': 'fill',
-        'layout': {},
-        'filter': ['!=', ["slice", ['get', 'areacode'], 0, 1], 'N'],
-        'paint': {
-            'fill-color': interpolateField(currentField),
-            'fill-opacity': 0.5,
-            'fill-antialias': false,
+            map.fitBounds(llb, {padding: 20});
         },
-    });
-    map.addLayer({
-        'id': 'sedldata-highlight',
-        'source': 'sedldata',
-        'source-layer': SOURCE_LAYER,
-        'type': 'line',
-        'layout': {},
-        'filter': ['==', ['get', 'areacode'], ''],
-        'paint': {
-            'line-color': '#0079b9',
-            'line-width': 3,
-        },
-    });
-
-    setField(map, currentField);
-});
-
-
-// Create a popup, but don't add it to the map yet.
-var popup = new mapboxgl.Popup({
-    closeButton: false,
-    closeOnClick: false
-});
-var areaDisplay = document.getElementById('area-display');
-
-map.on('mousemove', 'sedldata', function (e) {
-    // Change the cursor style as a UI indicator.
-    map.getCanvas().style.cursor = 'pointer';
-});
-
-map.on('click', 'sedldata', function (e) {
-    // Change the cursor style as a UI indicator.
-    map.getCanvas().style.cursor = 'pointer';
-
-    var features = map.queryRenderedFeatures(e.point);
-
-    var displayFeaturesText = `<h2 class="pa0 ma0 mb2">${features[0].properties.areaname}</h2>
-        <h3 class="pa0 ma0 mb2"><span class="f6 gray normal">${features[0].properties.areatype} in </span>${features[0].properties.UTLANM }</h3>
-        <ul class="list pa0 ma0 flex flex-wrap">`
-    Object.entries(FIELDS).forEach(([key, value]) => {
-        if (features[0].properties[key]){
-            var v = features[0].properties[key];
-            if (value.nformat){
-                v = value.nformat(features[0].properties[key]);
-            }
-            displayFeaturesText += `<li class="pa0 ma0 pr3 w-100 f5">
-                <strong class="f6">${value.name}</strong><br>${v}
-            </p>`
-        }
-    });
-    displayFeaturesText += `</ul>`;
-
-    if (features[0].properties.areaname){
-        // popup
-        //     .setLngLat(e.lngLat)
-        //     .setHTML(displayFeaturesText)
-        //     .addTo(map);
-        areaDisplay.innerHTML = displayFeaturesText;
-        map.setFilter('sedldata-highlight', ['==', ['get', 'areacode'], features[0].properties.areacode]);
-    } else {
-        // popup.remove();
-        areaDisplay.innerHTML = '';
-        map.setFilter('sedldata-highlight', ['==', ['get', 'areacode'], '']);
     }
-});
-
-map.on('mouseleave', 'sedldata', function () {
-    map.getCanvas().style.cursor = '';
-    popup.remove();
-});
+})

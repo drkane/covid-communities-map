@@ -1,0 +1,7 @@
+source_id,link,rename
+ttwa_boundaries,https://opendata.arcgis.com/datasets/64c6554a58a4474ca8aca56980123204_0.geojson,ttwa_boundaries.geojson
+msoa_boundaries,https://opendata.arcgis.com/datasets/29fdaa2efced40378ce8173b411aeb0e_2.geojson,msoa_bgc.geojson
+iz_boundaries,http://sedsh127.sedsh.gov.uk/Atom_data/ScotGov/ZippedShapefiles/SG_IntermediateZoneBdry_2011.zip,
+nisoa_boundaries,https://www.nisra.gov.uk/sites/nisra.gov.uk/files/publications/SOA2011_Esri_Shapefile_0.zip,
+msoa_lookups,https://github.com/drkane/geo-lookups/raw/master/msoa_la.csv,
+brc_msoa_vulnerability,https://github.com/britishredcrosssociety/covid-19-vulnerability/raw/master/output/vulnerability-MSOA-UK.csv,
