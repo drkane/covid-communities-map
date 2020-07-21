@@ -31,6 +31,8 @@ const VULNERABILITY_QUINTILES = {
     5: "5 - most vulnerable",
 }
 
+const AREACODE_FIELD = 'msoa11cd';
+const AREANAME_FIELD = 'MSOA11HCLNM';
 const FIELD_MATCH = /(.*)_([0-9]{4}_[0-9]{2})/;
 
 const FIELDS = {
@@ -149,7 +151,7 @@ var app = new Vue({
     data() {
         return {
             currentField: Object.keys(FIELDS)[0],
-            currentMonth: Object.keys(MONTHS)[0],
+            currentMonth: Object.keys(MONTHS).slice(-1)[0],
             currentArea: "",
             currentVulnerabilityQuintile: "",
             highlightedArea: null,
@@ -161,6 +163,8 @@ var app = new Vue({
             boundaries: null,
             map: null,
             accessToken: MAPBOX_ACCESS_TOKEN,
+            showAbout: false,
+            charts: {},
         }
     },
     mounted () {
@@ -203,9 +207,9 @@ var app = new Vue({
                 'source-layer': SOURCE_LAYER,
                 'type': 'fill',
                 'layout': {},
-                'filter': ['!=', ["slice", ['get', 'areacode'], 0, 1], 'N'],
+                'filter': ['!=', ["slice", ['get', AREACODE_FIELD], 0, 1], 'N'],
                 'paint': {
-                    'fill-color': component.colours,
+                    'fill-color': 'white',
                     'fill-opacity': 0.5,
                     'fill-antialias': false,
                 },
@@ -216,7 +220,7 @@ var app = new Vue({
                 'source-layer': SOURCE_LAYER,
                 'type': 'line',
                 'layout': {},
-                'filter': ['==', ['get', 'areacode'], ''],
+                'filter': ['==', ['get', AREACODE_FIELD], ''],
                 'paint': {
                     'line-color': '#0079b9',
                     'line-width': 3,
@@ -243,12 +247,12 @@ var app = new Vue({
                 map.getCanvas().style.cursor = 'pointer';
             
                 var features = map.queryRenderedFeatures(e.point);
-                if (features[0].properties.areaname){
+                if (features[0].properties[AREANAME_FIELD]){
                     component.highlightedArea = features[0];
-                    map.setFilter('sedldata-highlight', ['==', ['get', 'areacode'], features[0].properties.areacode]);
+                    map.setFilter('sedldata-highlight', ['==', ['get', AREACODE_FIELD], features[0].properties[AREACODE_FIELD]]);
                 } else {
                     component.highlightedArea = null;
-                    map.setFilter('sedldata-highlight', ['==', ['get', 'areacode'], '']);
+                    map.setFilter('sedldata-highlight', ['==', ['get', AREACODE_FIELD], '']);
                 }
             });
             
@@ -282,7 +286,10 @@ var app = new Vue({
                 .catch((error) => {
                     console.log(error);
                 })
-                .finally(() => component.loading = false);
+                .finally(() => {
+                    component.loading = false;
+                    component.updateMap();
+                });
         });
     },
     watch: {
@@ -338,6 +345,10 @@ var app = new Vue({
                 ["linear"],
                 ["get", this.field_id],
             ].concat(colours);
+        },
+        areaName: function(){
+            if(!this.highlightedArea){return "";}
+            return this.highlightedArea.properties[AREANAME_FIELD];
         },
         areaValues: function(){
             if(!this.highlightedArea){
@@ -411,6 +422,17 @@ var app = new Vue({
                         parseFloat(this.currentVulnerabilityQuintile)
                     ]
                 )
+            }
+        },
+        resetMap: function(){
+            this.currentArea = "";
+            if(!this.map){
+                return;
+            }
+            this.map.flyTo({ center: STARTING_LATLNG, zoom: STARTING_ZOOM });
+            if (this.map.getLayer('highlightAreaBBox')) {
+                this.map.removeLayer('highlightAreaBBox');
+                this.map.removeSource('highlightAreaBBox');
             }
         },
         selectArea: function(){

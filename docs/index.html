@@ -24,7 +24,7 @@
             </div>
             <div class="w-25-ns fl pa3">
                 <h1 class="dib f3 b">Covid-19 and Communities</h1><br>
-                <a href="#about" class="link blue underline-hover f6 white dib toggle-about">About this data</a>
+                <a href="#about" class="link blue underline-hover f6 white dib toggle-about" v-on:click="showAbout = !showAbout">About this data</a>
             </div>
             <div class="w-100 w-60-ns fl pa2">
                 <div class="dib pa2 w-100 fl">
@@ -43,7 +43,7 @@
                           {{ area.name }}
                         </option>
                     </select>
-                    <a href="#" id="reset-map" class="link underline blue f6 w-100">Reset map</a>
+                    <a href="#" id="reset-map" class="link underline blue f6 w-100" v-on:click="resetMap">Reset map</a>
                 </div>
                 <div class="dib pa2 w-100 w-third-ns fl">
                     <label class="fl f6 mb1 w-100" for="vulnerability-quintile">Vulnerability quintile</label>
@@ -65,8 +65,8 @@
             </div>
         </header>
         <main class="h6 h-100-l">
-            <div id="about-data" class="pa3 measure absolute bg-white dn overflow-y-auto lh-copy" style="z-index: 9999; max-height: 500px;">
-                <a href="#about" class="link blue underline-hover f6 white dib toggle-about fr">Close</a>
+            <div id="about-data" class="pa3 measure absolute bg-white overflow-y-auto lh-copy" style="z-index: 9999; max-height: 500px;" v-if="showAbout">
+                <a href="#about" class="link blue underline-hover f6 white dib toggle-about fr" v-on:click="showAbout = !showAbout">Close</a>
                 <h3 class="">Data sources</h3>
                 <h4>Sales data: Provided by Imfoco</h4>
                 <ul>
@@ -142,7 +142,7 @@
                 <div id="map-legend-source" class="f6 gray lh-copy">{{ field.credits }}</div>
             </div>
             <div id="area-display" class="pv3 bt bw3 b--light-gray" v-if="highlightedArea">
-                <h2 class="pa0 ma0 mb2">{{ highlightedArea.properties.areaname }}</h2>
+                <h2 class="pa0 ma0 mb2">{{ areaName }}</h2>
                 <h3 class="pa0 ma0 mb2">
                     <span class="f6 gray normal">{{ highlightedArea.properties.areatype }} in</span>
                     {{ highlightedArea.properties.UTLANM }}
@@ -150,7 +150,13 @@
                 <ul class="list pa0 ma0 flex flex-wrap">
                     <li class="pa0 ma0 pr3 w-100 f5" v-for="(value, key) in fields">
                         <span v-if="areaValues[key]">
-                            <strong class="f6">{{ value.name }}</strong><br>{{ areaValues[key] }}
+                            <strong class="f6">{{ value.name }}</strong><br>
+                            <ul v-if="areaValues[key].constructor.name == 'Object'">
+                                <li v-for="(v, k) in areaValues[key]"><strong>{{ months[k] }}</strong>: {{v}}</li>
+                            </ul>
+                            <span v-else>
+                                {{ areaValues[key] }}
+                            </span>
                         </span>
                     </li>
                 </ul>
@@ -160,7 +166,7 @@
     <script>
         const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic2VkbCIsImEiOiJja2EybHlpMXMwNTZ3M2dxYmdlOTUyMW1uIn0.UCtzAM2u3i1X_0F4orMBhQ';
         const TILESET_URL = 'mapbox://sedl.2r91eel5';
-        const SOURCE_LAYER = 'all_data';
+        const SOURCE_LAYER = 'msoa_data';
         const STARTING_LATLNG = [-2.89479, 54.093409]; // original: [-1.485, 52.567],
         const STARTING_ZOOM = 5;
         const MAP_STYLE = 'https://s3-eu-west-1.amazonaws.com/tiles.os.uk/v2/styles/open-zoomstack-light/style.json';
